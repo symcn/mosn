@@ -19,12 +19,7 @@ public class Application {
     public static void main(String[] args) {
         ReferenceConfig<DemoService> referenceConfig = new ReferenceConfig<>();
         referenceConfig.setInterface(DemoService.class);
-        String port= System.getenv("PROVIDER_LISTENER_PORT");
-        if(StringUtils.isEmpty(port)){
-            port="20880";
-        }
-        System.out.println("current port:"+port);
-        referenceConfig.setUrl("dubbo://127.0.0.1:"+port);
+        referenceConfig.setUrl("dubbo://127.0.0.1:2045");
         ApplicationConfig applicationConfig = new ApplicationConfig("dubbo-examples-consumer");
         applicationConfig.setQosEnable(false);
         referenceConfig.setApplication(applicationConfig);

@@ -22,9 +22,8 @@ import (
 	"fmt"
 
 	"mosn.io/api"
-	v2 "mosn.io/mosn/pkg/config/v2"
+	"mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
-	"mosn.io/mosn/pkg/router/handler"
 	"mosn.io/mosn/pkg/types"
 )
 
@@ -71,13 +70,30 @@ func RegisterMakeHandlerChain(f MakeHandlerChain, order uint32) {
 	}
 }
 
+type simpleHandler struct {
+	route api.Route
+}
+
+func (h *simpleHandler) IsAvailable(ctx context.Context, manager types.ClusterManager) (types.ClusterSnapshot, types.HandlerStatus) {
+	if h.route == nil {
+		return nil, types.HandlerNotAvailable
+	}
+	clusterName := h.Route().RouteRule().ClusterName()
+	snapshot := manager.GetClusterSnapshot(context.Background(), clusterName)
+	return snapshot, types.HandlerAvailable
+}
+
+func (h *simpleHandler) Route() api.Route {
+	return h.route
+}
+
 func DefaultMakeHandlerChain(ctx context.Context, headers api.HeaderMap, routers types.Routers, clusterManager types.ClusterManager) *RouteHandlerChain {
 	var handlers []types.RouteHandler
 	if r := routers.MatchRoute(headers, 1); r != nil {
 		if log.Proxy.GetLogLevel() >= log.DEBUG {
 			log.Proxy.Debugf(ctx, RouterLogFormat, "DefaultHandklerChain", "MatchRoute", fmt.Sprintf("matched a route: %v", r))
 		}
-		handlers = append(handlers, handler.GetRouteHandler(ctx, r, headers))
+		handlers = append(handlers, &simpleHandler{route: r})
 	}
 	return NewRouteHandlerChain(ctx, clusterManager, handlers)
 }

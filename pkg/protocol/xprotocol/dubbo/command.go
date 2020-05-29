@@ -44,10 +44,6 @@ type Frame struct {
 
 	data    types.IoBuffer // wrapper of data
 	content types.IoBuffer // wrapper of payload
-
-	attachmentLen uint32
-
-	attachment map[string]string
 }
 
 // ~ XFrame
@@ -80,6 +76,10 @@ func (r *Frame) GetHeader() types.HeaderMap {
 
 func (r *Frame) GetData() types.IoBuffer {
 	return r.content
+}
+
+func (r *Frame) SetData(data types.IoBuffer) {
+	r.content = data
 }
 
 func (r *Frame) GetStatusCode() uint32 {

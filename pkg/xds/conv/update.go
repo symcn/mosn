@@ -19,9 +19,10 @@ package conv
 
 import (
 	"fmt"
+
 	envoy_api_v2 "github.com/envoyproxy/go-control-plane/envoy/api/v2"
 	jsoniter "github.com/json-iterator/go"
-	"mosn.io/mosn/pkg/config/v2"
+	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/router"
 	"mosn.io/mosn/pkg/server"
@@ -71,7 +72,7 @@ func ConvertAddOrUpdateListeners(listeners []*envoy_api_v2.Listener) {
 
 		log.DefaultLogger.Debugf("listenerAdapter.AddOrUpdateListener called, with mosn Listener:%+v", mosnListener)
 
-		if err := listenerAdapter.AddOrUpdateListener("", mosnListener, true, true, true); err == nil {
+		if err := listenerAdapter.AddOrUpdateListener("", mosnListener); err == nil {
 			log.DefaultLogger.Debugf("xds AddOrUpdateListener success,listener address = %s", mosnListener.Addr.String())
 			Stats.LdsUpdateSuccess.Inc(1)
 		} else {
