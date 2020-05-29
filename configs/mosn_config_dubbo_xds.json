@@ -29,7 +29,7 @@
 					],
 					"stream_filters": [
 						{
-							"type": "dmall_dubbo",
+							"type": "dubbo_demo",
 							"config": {}
 						}
 					]
