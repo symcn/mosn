@@ -10,33 +10,31 @@ import (
 )
 
 func init() {
-	api.RegisterStream("dmall_dubbo", CreateDmallDubbo)
+	api.RegisterStream("dubbo_demo", CreateDubbo)
 }
 
-func CreateDmallDubbo(conf map[string]interface{}) (api.StreamFilterChainFactory, error) {
+func CreateDubbo(conf map[string]interface{}) (api.StreamFilterChainFactory, error) {
 	return &factory{}, nil
 }
 
 type factory struct{}
 
 func (f *factory) CreateFilterChain(ctx context.Context, callbacks api.StreamFilterChainFactoryCallbacks) {
-	filter := NewDmallDubboFilter(ctx)
+	filter := NewDubboFilter(ctx)
 	callbacks.AddStreamReceiverFilter(filter, api.BeforeRoute)
 }
 
-type dmallDubboFilter struct {
+type DubboFilter struct {
 	handler api.StreamReceiverFilterHandler
 }
 
-func NewDmallDubboFilter(ctx context.Context) *dmallDubboFilter {
-	return &dmallDubboFilter{}
+func NewDubboFilter(ctx context.Context) *DubboFilter {
+	return &DubboFilter{}
 }
 
-func (d *dmallDubboFilter) OnDestroy() {}
+func (d *DubboFilter) OnDestroy() {}
 
-func (d *dmallDubboFilter) OnReceive(ctx context.Context, headers api.HeaderMap, buf buffer.IoBuffer, trailers api.HeaderMap) api.StreamFilterStatus {
-	// spew.Dump(headers)
-
+func (d *DubboFilter) OnReceive(ctx context.Context, headers api.HeaderMap, buf buffer.IoBuffer, trailers api.HeaderMap) api.StreamFilterStatus {
 	service, ok := headers.Get("service")
 	if ok {
 		headers.Set(protocol.MosnHeaderHostKey, service)
@@ -51,5 +49,5 @@ func (d *dmallDubboFilter) OnReceive(ctx context.Context, headers api.HeaderMap,
 	return api.StreamFilterContinue
 }
 
-func (d *dmallDubboFilter) SetReceiveFilterHandler(handler api.StreamReceiverFilterHandler) {
+func (d *DubboFilter) SetReceiveFilterHandler(handler api.StreamReceiverFilterHandler) {
 }
