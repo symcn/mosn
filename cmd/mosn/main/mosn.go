@@ -29,6 +29,7 @@ import (
 	_ "mosn.io/mosn/pkg/filter/network/connectionmanager"
 	_ "mosn.io/mosn/pkg/filter/network/proxy"
 	_ "mosn.io/mosn/pkg/filter/network/tcpproxy"
+	_ "mosn.io/mosn/pkg/filter/stream/dubbo"
 	_ "mosn.io/mosn/pkg/filter/stream/faultinject"
 	_ "mosn.io/mosn/pkg/filter/stream/mixer"
 	_ "mosn.io/mosn/pkg/filter/stream/payloadlimit"
@@ -48,6 +49,8 @@ import (
 	_ "mosn.io/mosn/pkg/stream/http"
 	_ "mosn.io/mosn/pkg/stream/http2"
 	_ "mosn.io/mosn/pkg/stream/xprotocol"
+	_ "mosn.io/mosn/pkg/trace/skywalking"
+	_ "mosn.io/mosn/pkg/trace/skywalking/http"
 	_ "mosn.io/mosn/pkg/trace/sofa/http"
 	_ "mosn.io/mosn/pkg/trace/sofa/xprotocol"
 	_ "mosn.io/mosn/pkg/trace/sofa/xprotocol/bolt"
@@ -59,12 +62,20 @@ import (
 var Version = "0.4.0"
 
 func main() {
+	app := newMosnApp(&cmdStart)
+
+	// ignore error so we don't exit non-zero and break gfmrun README example tests
+	_ = app.Run(os.Args)
+}
+
+func newMosnApp(startCmd *cli.Command) *cli.App {
 	app := cli.NewApp()
 	app.Name = "mosn"
 	app.Version = Version
 	app.Compiled = time.Now()
 	app.Copyright = "(c) " + strconv.Itoa(time.Now().Year()) + " Ant Financial"
 	app.Usage = "MOSN is modular observable smart netstub."
+	app.Flags = cmdStart.Flags
 
 	//commands
 	app.Commands = []cli.Command{
@@ -75,12 +86,12 @@ func main() {
 
 	//action
 	app.Action = func(c *cli.Context) error {
-		cli.ShowAppHelp(c)
+		if c.NumFlags() == 0 {
+			return cli.ShowAppHelp(c)
+		}
 
-		c.App.Setup()
-		return nil
+		return startCmd.Action.(func(c *cli.Context) error)(c)
 	}
 
-	// ignore error so we don't exit non-zero and break gfmrun README example tests
-	_ = app.Run(os.Args)
+	return app
 }
