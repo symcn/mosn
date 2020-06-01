@@ -28,6 +28,7 @@ import (
 	_ "mosn.io/mosn/pkg/filter/listener/originaldst"
 	_ "mosn.io/mosn/pkg/filter/network/connectionmanager"
 	_ "mosn.io/mosn/pkg/filter/network/proxy"
+	_ "mosn.io/mosn/pkg/filter/network/registry"
 	_ "mosn.io/mosn/pkg/filter/network/tcpproxy"
 	_ "mosn.io/mosn/pkg/filter/stream/dubbo"
 	_ "mosn.io/mosn/pkg/filter/stream/faultinject"
