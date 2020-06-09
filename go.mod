@@ -3,6 +3,7 @@ module mosn.io/mosn
 go 1.12
 
 require (
+	github.com/SkyAPM/go2sky v0.3.0
 	github.com/TarsCloud/TarsGo v0.0.0-20181112071624-2d42457f2025
 	github.com/apache/dubbo-go-hessian2 v1.5.0
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -22,22 +23,24 @@ require (
 	github.com/klauspost/cpuid v1.2.1 // indirect
 	github.com/lyft/protoc-gen-validate v0.0.14
 	github.com/neverhook/easygo v0.0.0-20180828090412-787757e64990
-	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.0.0
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 	github.com/prometheus/common v0.6.0 // indirect
 	github.com/prometheus/procfs v0.0.3 // indirect
-	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563
-	github.com/stretchr/testify v1.4.0
+	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
+	github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da
+	github.com/stretchr/testify v1.5.1
 	github.com/tjfoc/gmsm v0.0.0-20190220013605-bfb01827afcb
 	github.com/urfave/cli v1.20.0
 	github.com/valyala/fasthttp v1.2.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
-	golang.org/x/net v0.0.0-20191004110552-13f9640d40b9
+	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0
 	golang.org/x/sys v0.0.0-20190826190057-c7b8b68b1456
 	google.golang.org/grpc v1.28.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	istio.io/api v0.0.0-20200227213531-891bf31f3c32
-	mosn.io/api v0.0.0-20200313100800-96f82cd67746
-	mosn.io/pkg v0.0.0-20200306153343-5ed3dae838b4
+	k8s.io/klog v1.0.0
+	mosn.io/api v0.0.0-20200416082846-2e7ce9a85557
+	mosn.io/pkg v0.0.0-20200428055827-06e02c6fbd6b
 )
