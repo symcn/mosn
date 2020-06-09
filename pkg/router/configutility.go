@@ -21,11 +21,10 @@ import (
 	"regexp"
 	"sort"
 
-	"mosn.io/mosn/pkg/protocol"
-
 	"mosn.io/api"
 	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
+	"mosn.io/mosn/pkg/protocol"
 	"mosn.io/mosn/pkg/types"
 )
 
