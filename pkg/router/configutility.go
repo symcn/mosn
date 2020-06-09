@@ -18,6 +18,7 @@
 package router
 
 import (
+	"mosn.io/mosn/pkg/protocol"
 	"regexp"
 	"sort"
 
