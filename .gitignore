@@ -8,3 +8,4 @@ coverage.txt
 mosnd
 mosnd.md5
 examples/codes/dubbo/xds/mosn/mosn
+logs
