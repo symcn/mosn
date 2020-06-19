@@ -84,11 +84,11 @@ func doSubUnsub(req subReq, sub bool) error {
 	}
 
 	vals := url.Values{
-		dubboconsts.ROLE_KEY:  []string{fmt.Sprint(dubbocommon.CONSUMER)},
-		dubboconsts.GROUP_KEY: []string{req.Service.Group},
+		dubboconsts.ROLE_KEY: []string{fmt.Sprint(dubbocommon.CONSUMER)},
+		//dubboconsts.GROUP_KEY: []string{req.Service.Group},
 	}
 	for k, v := range req.Service.Params {
-		vals.Set(k, v)
+		vals.Set(k, fmt.Sprint(v))
 	}
 	dubboURL := dubbocommon.NewURLWithOptions(
 		dubbocommon.WithPath(servicePath),
