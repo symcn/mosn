@@ -150,3 +150,7 @@ type pubReq struct {
   "msg": "ack fail timeout"
 }
 ```
+
+## 说明
+
+response 返回的结果 0 表示成功， 1 表示失败。如果返回 0 都会有已经注册的服务列表，用于 SDK 逻辑判断
