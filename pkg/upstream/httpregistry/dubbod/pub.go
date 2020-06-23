@@ -26,6 +26,7 @@ import (
 	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/trace"
+	"mosn.io/mosn/pkg/types"
 )
 
 var (
@@ -52,6 +53,13 @@ func publish(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response(w, resp{Errno: fail, ErrMsg: err.Error()})
 		return
+	}
+
+	for k, v := range types.GetPodLabels() {
+		if k == "sym-group" {
+			k = "flag"
+		}
+		req.Service.Params[k] = v
 	}
 
 	err = doPubUnPub(req, true)
