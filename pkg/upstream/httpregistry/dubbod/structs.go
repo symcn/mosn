@@ -42,5 +42,5 @@ type pubReq struct {
 type resp struct {
 	Errno         int      `json:"code"`
 	ErrMsg        string   `json:"msg"`
-	InterfaceList []string `json:"interface_list"`
+	InterfaceList []string `json:"interface_list,omitempty"`
 }

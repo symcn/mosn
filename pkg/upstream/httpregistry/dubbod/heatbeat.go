@@ -20,7 +20,7 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 	select {
 	case hb <- struct{}{}:
 	case <-time.After(time.Second * 5):
-		response(w, resp{Errno: fail, ErrMsg: "ack fail"})
+		response(w, resp{Errno: fail, ErrMsg: "ack fail timeout"})
 		return
 	}
 
