@@ -15,16 +15,11 @@ _所有的成功请求都会返回当前已经注册的服务的名称 `interfac
 ### request struct
 
 ```golang
-type pubReq struct {
-	Service struct {
-		Interface string   `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
-		// Port      string   `json:"port" binding:"numeric"`       // user service port, eg. 8080
-		Group   string            `json:"group"`   // binding:"required"`
-		Version string            `json:"version"` // eg. 1.0.3
-		Params  map[string]string `json:"params"`
+Service struct {
+		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
+		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
+		Params    map[string]interface{} `json:"params"`
 	} `json:"service"`
-}
 ```
 
 ### example
@@ -36,8 +31,6 @@ type pubReq struct {
   "service": {
     "interface": "com.test.cc",
     "methods": [""],
-    "group": "blue",
-    "version": ""
   }
 }
 ```
