@@ -129,13 +129,13 @@ func doPubUnPub(req pubReq, pub bool) error {
 		interfaceName: req.Service.Interface,
 	})
 	vals := url.Values{
-		dubboconsts.ROLE_KEY:      []string{fmt.Sprint(dubbocommon.PROVIDER)},
-		dubboconsts.GROUP_KEY:     []string{req.Service.Group},
+		dubboconsts.ROLE_KEY: []string{fmt.Sprint(dubbocommon.PROVIDER)},
+		//dubboconsts.GROUP_KEY:     []string{req.Service.Group},
 		dubboconsts.INTERFACE_KEY: []string{req.Service.Interface},
-		dubboconsts.VERSION_KEY:   []string{req.Service.Version},
+		//dubboconsts.VERSION_KEY:   []string{req.Service.Version},
 	}
 	for k, v := range req.Service.Params {
-		vals.Set(k, v)
+		vals.Set(k, fmt.Sprint(v))
 	}
 	dubboURL, _ := dubbocommon.NewURL(dubboPath,
 		dubbocommon.WithParams(vals),
