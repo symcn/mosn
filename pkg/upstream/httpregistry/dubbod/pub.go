@@ -20,12 +20,30 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
+	"sync"
 
 	dubbocommon "github.com/mosn/registry/dubbo/common"
 	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
+	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/trace"
+	"mosn.io/mosn/pkg/types"
 )
+
+var (
+	l              sync.Mutex
+	alreadyPublish = make(map[string]pubReq)
+)
+
+func getInterfaceList() []string {
+	if len(alreadyPublish) == 0 {
+		return nil
+	}
+	result := make([]string, 0, len(alreadyPublish))
+	for i := range alreadyPublish {
+		result = append(result, i)
+	}
+	return result
+}
 
 // publish a service to registry
 func publish(w http.ResponseWriter, r *http.Request) {
@@ -37,13 +55,23 @@ func publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for k, v := range types.GetPodLabels() {
+		if k == "sym-group" {
+			k = "flag"
+		}
+		req.Service.Params[k] = v
+	}
+
 	err = doPubUnPub(req, true)
 	if err != nil {
 		response(w, resp{Errno: fail, ErrMsg: "publish fail, err: " + err.Error()})
 		return
 	}
+	l.Lock()
+	alreadyPublish[req.Service.Interface] = req
+	l.Unlock()
 
-	response(w, resp{Errno: succ, ErrMsg: "publish success"})
+	response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
 	return
 }
 
@@ -61,8 +89,11 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 		response(w, resp{Errno: fail, ErrMsg: "unpub fail, err: " + err.Error()})
 		return
 	}
+	l.Lock()
+	delete(alreadyPublish, req.Service.Interface)
+	l.Unlock()
 
-	response(w, resp{Errno: succ, ErrMsg: "unpub success"})
+	response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
 	return
 
 }
@@ -94,17 +125,17 @@ func doPubUnPub(req pubReq, pub bool) error {
 
 	var dubboPath = dubboPathTpl.ExecuteString(map[string]interface{}{
 		ip:            trace.GetIp(),
-		port:          strconv.Itoa(GetExportDubboPort()),
+		port:          fmt.Sprintf("%d", GetExportDubboPort()),
 		interfaceName: req.Service.Interface,
 	})
 	vals := url.Values{
-		dubboconsts.ROLE_KEY: []string{fmt.Sprint(dubbocommon.PROVIDER)},
-		//dubboconsts.GROUP_KEY:     []string{req.Service.Group},
+		dubboconsts.ROLE_KEY:      []string{fmt.Sprint(dubbocommon.PROVIDER)},
+		dubboconsts.GROUP_KEY:     []string{req.Service.Group},
 		dubboconsts.INTERFACE_KEY: []string{req.Service.Interface},
-		//dubboconsts.VERSION_KEY:   []string{req.Service.Version},
+		dubboconsts.VERSION_KEY:   []string{req.Service.Version},
 	}
 	for k, v := range req.Service.Params {
-		vals.Set(k, fmt.Sprint(v))
+		vals.Set(k, v)
 	}
 	dubboURL, _ := dubbocommon.NewURL(dubboPath,
 		dubbocommon.WithParams(vals),
@@ -118,4 +149,24 @@ func doPubUnPub(req pubReq, pub bool) error {
 	// unpublish this service
 	return reg.UnRegister(dubboURL)
 
+}
+
+func unpublishAll() (notUnpub []string) {
+	if len(alreadyPublish) == 0 {
+		return nil
+	}
+
+	notUnpub = make([]string, 0, len(alreadyPublish))
+	l.Lock()
+	defer l.Unlock()
+	for _, req := range alreadyPublish {
+		if e := doPubUnPub(req, false); e != nil {
+			log.DefaultLogger.Errorf("can not unpublish service {%s} err:%+v", req.Service.Interface, e.Error())
+			notUnpub = append(notUnpub, req.Service.Interface)
+		} else {
+			log.DefaultLogger.Infof("unpublish service {%s} succ", req.Service.Interface)
+		}
+	}
+	alreadyPublish = make(map[string]pubReq)
+	return notUnpub
 }

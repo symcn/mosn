@@ -36,6 +36,7 @@ type pubReq struct {
 
 // response struct for all requests
 type resp struct {
-	Errno  int    `json:"code"`
-	ErrMsg string `json:"msg"`
+	Errno         int      `json:"code"`
+	ErrMsg        string   `json:"msg"`
+	InterfaceList []string `json:"interface_list,omitempty"`
 }
