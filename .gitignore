@@ -9,3 +9,4 @@ mosnd
 mosnd.md5
 examples/codes/dubbo/xds/mosn/mosn
 logs
+build/mosn

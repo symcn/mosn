@@ -134,3 +134,7 @@ shell:
 	docker run --rm -ti -v $(GOPATH):/go -v $(shell pwd):/go/src/${PROJECT_NAME} -w /go/src/${PROJECT_NAME} ${BUILD_IMAGE} /bin/bash
 
 .PHONY: unit-test build image rpm upload shell
+
+proxy2:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./build/mosn -ldflags "-X mosn.io/mosn/pkg/types.IstioVersion=1.6.4" ./cmd/mosn/main
+	docker build -t registry.cn-hangzhou.aliyuncs.com/champly/proxyv2:1.6.4 -f ./build/Dockerfile .

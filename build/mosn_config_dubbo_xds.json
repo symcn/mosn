@@ -2,7 +2,7 @@
 	"servers": [
 		{
 			"default_log_path": "stdout",
-			"default_log_level": "INFO",
+			"default_log_level": "DEBUG",
 			"listeners": [
 				{
 					"name": "egress_dubbo",
@@ -61,6 +61,12 @@
 								}
 							]
 						}
+					],
+					"stream_filters": [
+						{
+							"type": "dubbo_demo",
+							"config": {}
+						}
 					]
 				}
 			],
@@ -107,18 +113,24 @@
 						"address": "127.0.0.1:20880"
 					}
 				]
-			},
+			}
+		]
+	},
+	"metrics": {
+		"sinks": [
 			{
-				"Name": "dubbo_consumer_cluster2",
-				"type": "SIMPLE",
-				"lb_type": "LB_RANDOM",
-				"max_request_per_conn": 1024,
-				"conn_buffer_limit_bytes": 32768,
-				"hosts": [
-					{
-						"address": "10.12.210.41:20880"
-					}
-				]
+				"type": "prometheus",
+				"config": {
+					"port": 15090,
+					"endpoint": "/stats/prometheus",
+					"percentiles": [
+						50,
+						90,
+						95,
+						96,
+						99
+					]
+				}
 			}
 		]
 	},
@@ -126,22 +138,9 @@
 		"address": {
 			"socket_address": {
 				"address": "0.0.0.0",
-				"port_value": 34901
+				"port_value": "15000"
 			}
 		}
-	},
-	"metrics": {
-		"shm_zone": "metrics",
-		"shm_size": "10MB",
-		"flush_interval": "500ms",
-		"sinks": [
-			{
-				"type": "prometheus",
-				"config": {
-					"port": 15090
-				}
-			}
-		]
 	},
 	"static_resources": {
 		"clusters": [
@@ -153,7 +152,7 @@
 				"hosts": [
 					{
 						"socket_address": {
-							"address": "127.0.0.1",
+							"address": "istiod.istio-system.svc",
 							"port_value": 15010
 						}
 					}

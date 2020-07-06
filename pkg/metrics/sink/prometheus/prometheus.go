@@ -65,8 +65,10 @@ type promConfig struct {
 	Port     int    `json:"port"` // pull mode attrs
 	Endpoint string `json:"endpoint"`
 
-	DisableCollectProcess bool `json:"disable_collect_process"`
-	DisableCollectGo      bool `json:"disable_collect_go"`
+	DisableCollectProcess bool  `json:"disable_collect_process"`
+	DisableCollectGo      bool  `json:"disable_collect_go"`
+	Percentiles           []int `json:"percentiles,omitempty"`
+	percentilesFloat      []float64
 }
 
 // promSink extract metrics from stats registry with specified interval
@@ -118,7 +120,9 @@ func (psink *promSink) Flush(writer io.Writer, ms []types.Metrics) {
 			case gometrics.Gauge:
 				psink.flushGauge(tracker, buf, flattenKey(prefix+name), suffix, float64(metric.Value()))
 			case gometrics.Histogram:
-				psink.flushHistogram(tracker, buf, flattenKey(prefix+name), suffix, metric.Snapshot())
+				h := metric.Snapshot()
+				metric.Clear()
+				psink.flushHistogram(tracker, buf, flattenKey(prefix+name), suffix, h)
 			}
 			buf.WriteTo(w)
 			buf.Reset()
@@ -131,7 +135,16 @@ func (psink *promSink) flushHistogram(tracker map[string]bool, buf types.IoBuffe
 	psink.flushGauge(tracker, buf, name+"_min", labels, float64(snapshot.Min()))
 	// max
 	psink.flushGauge(tracker, buf, name+"_max", labels, float64(snapshot.Max()))
-	// TODO: flush P90 P95 P99 if configured
+	// flush P90 P95 P99 percentiles
+	if len(psink.config.Percentiles) == 0 {
+		return
+	}
+	ps := snapshot.Percentiles(psink.config.percentilesFloat)
+	if len(ps) == len(psink.config.Percentiles) {
+		for i, p := range psink.config.Percentiles {
+			psink.flushGauge(tracker, buf, name, fmt.Sprintf("%s,percentile=\"P%d\"", labels, p), ps[i])
+		}
+	}
 }
 
 func (psink *promSink) flushGauge(tracker map[string]bool, buf types.IoBuffer, name string, labels string, val float64) {
@@ -231,6 +244,17 @@ func builder(cfg map[string]interface{}) (types.MetricsSink, error) {
 		if !strings.HasPrefix(promCfg.Endpoint, "/") {
 			return nil, fmt.Errorf("invalid endpoint format:%s", promCfg.Endpoint)
 		}
+	}
+
+	if len(promCfg.Percentiles) > 0 {
+		percentilesFloat := make([]float64, 0, len(promCfg.Percentiles))
+		for _, p := range promCfg.Percentiles {
+			if p > 100 {
+				return nil, fmt.Errorf("percentile {%d} must le 100", p)
+			}
+			percentilesFloat = append(percentilesFloat, float64(p)/100)
+		}
+		promCfg.percentilesFloat = percentilesFloat
 	}
 
 	return NewPromeSink(promCfg), nil

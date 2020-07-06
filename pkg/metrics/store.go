@@ -25,7 +25,6 @@ import (
 	"sort"
 
 	gometrics "github.com/rcrowley/go-metrics"
-	"mosn.io/mosn/pkg/metrics/shm"
 	"mosn.io/mosn/pkg/types"
 )
 
@@ -153,7 +152,12 @@ func (s *metrics) Counter(key string) gometrics.Counter {
 		return gometrics.NilCounter{}
 	}
 
-	return s.registry.GetOrRegister(key, shm.NewShmCounterFunc(s.fullName(key))).(gometrics.Counter)
+	// return s.registry.GetOrRegister(key, shm.NewShmCounterFunc(s.fullName(key))).(gometrics.Counter)
+	return &hookCounter{
+		key:      key,
+		prefix:   s.prefix,
+		registry: s.registry,
+	}
 }
 
 func (s *metrics) Gauge(key string) gometrics.Gauge {
@@ -162,7 +166,12 @@ func (s *metrics) Gauge(key string) gometrics.Gauge {
 		return gometrics.NilGauge{}
 	}
 
-	return s.registry.GetOrRegister(key, shm.NewShmGaugeFunc(s.fullName(key))).(gometrics.Gauge)
+	// return s.registry.GetOrRegister(key, shm.NewShmGaugeFunc(s.fullName(key))).(gometrics.Gauge)
+	return &hookGauge{
+		key:      key,
+		prefix:   s.prefix,
+		registry: s.registry,
+	}
 }
 
 func (s *metrics) Histogram(key string) gometrics.Histogram {
@@ -172,8 +181,19 @@ func (s *metrics) Histogram(key string) gometrics.Histogram {
 	}
 
 	// TODO: notice the histogram only keeps 100 values as we set
-	return s.registry.GetOrRegister(key, func() gometrics.Histogram { return gometrics.NewHistogram(gometrics.NewUniformSample(100)) }).(gometrics.Histogram)
+	// return s.registry.GetOrRegister(key, func() gometrics.Histogram { return gometrics.NewHistogram(gometrics.NewUniformSample(100)) }).(gometrics.Histogram)
+	return &hookHistogram{
+		key:      key,
+		registry: s.registry,
+	}
 }
+
+// func (s *metrics) Stand(key string) gometrics.StandardCounter {
+// 	// if defaultStore.matcher.isExclusionKey(key) {
+// 	// 	return gometrics.NilCounter{}
+// 	// }
+// 	ss := s.registry.GetOrRegister(key, func() gometrics.StandardCounter { return gometrics.StandardCounter{} }).(gometrics.StandardCounter)
+// }
 
 func (s *metrics) Each(f func(string, interface{})) {
 	s.registry.Each(f)

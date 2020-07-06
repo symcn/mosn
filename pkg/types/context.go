@@ -42,6 +42,8 @@ const (
 	ContextKeyTraceId
 	ContextKeyVariables
 	ContextKeyH2Stream
+	ContextKeyService
+	ContextKeyMethod
 
 	ContextKeyDownStreamProtocol
 	ContextKeyEnd
