@@ -12,7 +12,7 @@ var hb chan struct{}
 
 func init() {
 	hb = make(chan struct{}, 3)
-	go autoUnpub()
+	go autoUnPub()
 }
 
 func heartbeat(w http.ResponseWriter, r *http.Request) {
@@ -28,14 +28,14 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 	response(w, resp{Errno: succ, ErrMsg: "ack success", InterfaceList: getInterfaceList()})
 }
 
-func autoUnpub() {
+func autoUnPub() {
 	for {
 		select {
 		case <-time.After(heartBeatExpire * heartBeatNum):
-			log.DefaultLogger.Infof("heart beat expire, unpublish all service")
-			unpublishAll()
+			log.DefaultLogger.Infof("heartbeat expire, unPublish all service")
+			unPublishAll()
 		case <-hb:
-			log.DefaultLogger.Infof("heart beat.")
+			log.DefaultLogger.Debugf("heartbeat.")
 		}
 	}
 }

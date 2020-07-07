@@ -18,12 +18,10 @@ package dubbod
 
 import (
 	"fmt"
-	"net/http"
-	"net/url"
-	"sync"
-
 	dubbocommon "github.com/mosn/registry/dubbo/common"
 	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
+	"net/http"
+	"net/url"
 )
 
 // subscribe a service from registry
@@ -52,8 +50,8 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 		response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})
 		return
 	}
-
 	err = doSubUnsub(req, false)
+
 	if err != nil {
 		response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})
 		return
@@ -63,7 +61,7 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 }
 
 // map[string]registry.NotifyListener{}
-var dubboInterface2listener = sync.Map{}
+//var dubboInterface2listener = sync.Map{}
 
 func doSubUnsub(req subReq, sub bool) error {
 	zookeeperAddr := GetZookeeperAddr()
@@ -109,27 +107,27 @@ func doSubUnsub(req subReq, sub bool) error {
 		}
 	}
 
-	if sub {
-		// listen to provider change events
-		var l = &listener{}
-		go reg.Subscribe(dubboURL, l)
-		dubboInterface2listener.Store(servicePath, l)
-
-		err = addRouteRule(servicePath)
-		if err != nil {
-			return err
-		}
-	} else {
-		l, ok := dubboInterface2listener.Load(servicePath)
-		if ok {
-			err = reg.UnSubscribe(dubboURL, l.(*listener))
-			if err != nil {
-				return err
-			}
-		}
-
-		// NOTICE: router rule will remain in the router manager, but it's ok
-	}
+	//if sub {
+	//	// listen to provider change events
+	//	var l = &listener{}
+	//	go reg.Subscribe(dubboURL, l)
+	//	dubboInterface2listener.Store(servicePath, l)
+	//
+	//	err = addRouteRule(servicePath)
+	//	if err != nil {
+	//		return err
+	//	}
+	//} else {
+	//	l, ok := dubboInterface2listener.Load(servicePath)
+	//	if ok {
+	//		err = reg.UnSubscribe(dubboURL, l.(*listener))
+	//		if err != nil {
+	//			return err
+	//		}
+	//	}
+	//
+	//	// NOTICE: router rule will remain in the router manager, but it's ok
+	//}
 
 	return nil
 

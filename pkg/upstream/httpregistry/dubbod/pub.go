@@ -151,7 +151,7 @@ func doPubUnPub(req pubReq, pub bool) error {
 
 }
 
-func unpublishAll() (notUnpub []string) {
+func unPublishAll() (notUnpub []string) {
 	if len(alreadyPublish) == 0 {
 		return nil
 	}
