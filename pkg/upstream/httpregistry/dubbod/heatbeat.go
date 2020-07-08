@@ -1,7 +1,6 @@
 package dubbod
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -24,7 +23,6 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(alreadyPublish)
 	response(w, resp{Errno: succ, ErrMsg: "ack success", InterfaceList: getInterfaceList()})
 }
 
