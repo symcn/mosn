@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"net/url"
 	"sync"
+	"time"
 
 	dubbocommon "github.com/mosn/registry/dubbo/common"
 	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
@@ -55,6 +56,13 @@ func publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	l.Lock()
+	if _, ok := alreadyPublish[req.Service.Interface]; ok {
+		response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
+		return
+	}
+	l.Unlock()
+
 	for k, v := range types.GetPodLabels() {
 		if k == "sym-group" {
 			k = "flag"
@@ -71,6 +79,11 @@ func publish(w http.ResponseWriter, r *http.Request) {
 	alreadyPublish[req.Service.Interface] = req
 	l.Unlock()
 
+	select {
+	case hb <- struct{}{}:
+	case <-time.After(time.Second * 1):
+	}
+
 	response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
 	return
 }
@@ -84,6 +97,13 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	l.Lock()
+	if _, ok := alreadyPublish[req.Service.Interface]; !ok {
+		response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
+		return
+	}
+	l.Unlock()
+
 	err = doPubUnPub(req, false)
 	if err != nil {
 		response(w, resp{Errno: fail, ErrMsg: "unpub fail, err: " + err.Error()})
@@ -92,6 +112,11 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 	l.Lock()
 	delete(alreadyPublish, req.Service.Interface)
 	l.Unlock()
+
+	select {
+	case hb <- struct{}{}:
+	case <-time.After(time.Second * 1):
+	}
 
 	response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
 	return

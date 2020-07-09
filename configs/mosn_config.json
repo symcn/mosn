@@ -1,94 +1,75 @@
 {
-	"servers":[
+	"servers": [
 		{
-			"default_log_path":"stdout",
-			"routers":[
+			"default_log_path": "stdout",
+			"default_log_level": "DEBUG",
+			"listeners": [
 				{
-					"router_config_name":"server_router",
-					"virtual_hosts":[{
-						"name":"serverHost",
-						"domains": ["*"],
-						"routers": [
-							{
-								"match":{"prefix":"/"},
-								"route":{"cluster_name":"serverCluster"}
-							}
-						]
-					}]
-				},
-				{
-					"router_config_name":"client_router",
-					"virtual_hosts":[{
-						"name":"clientHost",
-						"domains": ["*"],
-						"routers": [
-							{
-								"match":{"prefix":"/"},
-								"route":{"cluster_name":"clientCluster"}
-							}
-						]
-					}]
-
+					"name": "egress_dubbo",
+					"address": "0.0.0.0:20881",
+					"bind_port": true,
+					"filter_chains": [
+						{
+							"tls_context": {},
+							"filters": [
+								{
+									"type": "proxy",
+									"config": {
+										"downstream_protocol": "X",
+										"upstream_protocol": "X",
+										"router_config_name": "20882",
+										"extend_config": {
+											"sub_protocol": "dubbo"
+										}
+									}
+								}
+							]
+						}
+					]
 				}
 			],
-			"listeners":[
+			"routers": [
 				{
-					"name":"serverListener",
-					"address": "127.0.0.1:2046",
-					"bind_port": true,
-					"filter_chains": [{
-						"filters": [
-							{
-								"type": "proxy",
-								"config": {
-									"downstream_protocol": "Http1",
-									"upstream_protocol": "Http1",
-									"router_config_name":"server_router"
+					"router_config_name": "20882",
+					"virtual_hosts": [
+						{
+							"name": "provider",
+							"domains": [
+								"*"
+							],
+							"routers": [
+								{
+									"match": {
+										"headers": [
+											{
+												"name": "service",
+												"value": ".*"
+											}
+										]
+									},
+									"route": {
+										"cluster_name": "dubbo_provider_cluster"
+									}
 								}
-							}
-						]
-					}]
-				},
-				{
-					"name":"clientListener",
-					"address": "127.0.0.1:2045",
-					"bind_port": true,
-					"filter_chains": [{
-						"filters": [
-							{
-								"type": "proxy",
-								"config": {
-									"downstream_protocol": "Http1",
-									"upstream_protocol": "Http1",
-									"router_config_name":"client_router"
-								}
-							}
-						]
-					}]
+							]
+						}
+					]
 				}
 			]
 		}
 	],
-	"cluster_manager":{
-		"clusters":[
+	"cluster_manager": {
+		"clusters": [
 			{
-				"name":"serverCluster",
+				"Name": "dubbo_provider_cluster",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,
-				"conn_buffer_limit_bytes":32768,
-				"hosts":[
-					{"address":"127.0.0.1:8080"}
-				]
-			},
-			{
-				"name": "clientCluster",
-				"type": "SIMPLE",
-				"lb_type": "LB_RANDOM",
-				"max_request_per_conn": 1024,
-				"conn_buffer_limit_bytes":32768,
-				"hosts":[
-					{"address":"127.0.0.1:2046"}
+				"conn_buffer_limit_bytes": 32768,
+				"hosts": [
+					{
+						"address": "10.12.198.94:20880"
+					}
 				]
 			}
 		]
