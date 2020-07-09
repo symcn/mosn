@@ -29,7 +29,7 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 func autoUnPub() {
 	for {
 		select {
-		case <-time.After(heartBeatExpire * heartBeatNum):
+		case <-time.After(GetHeartExpireTime()):
 			log.DefaultLogger.Infof("heartbeat expire, unPublish all service")
 			go unPublishAll()
 		case <-hb:

@@ -82,7 +82,7 @@ func publish(w http.ResponseWriter, r *http.Request) {
 
 	select {
 	case hb <- struct{}{}:
-	case <-time.After(time.Second * 1):
+	case <-time.After(time.Millisecond * 50):
 	}
 
 	response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
@@ -117,7 +117,7 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 
 	select {
 	case hb <- struct{}{}:
-	case <-time.After(time.Second * 1):
+	case <-time.After(time.Millisecond * 50):
 	}
 
 	response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})

@@ -21,8 +21,8 @@ const (
 	interfaceName               = "interface"
 	defaultExportPort           = 20882
 	mosnExportDubboPort         = "MOSN_EXPORT_PORT"
-	heartBeatExpire             = time.Second * 5
-	heartBeatNum                = 3
+	heartBeatExpire             = 15
+	mosnHeartBeatExpireKey      = "MOSN_HEART_EXPIRE"
 )
 
 func GetHttpAddr() string {
@@ -47,9 +47,22 @@ func GetExportDubboPort() int {
 	return port
 }
 
+func GetHeartExpireTime() time.Duration {
+	et, err := strconv.Atoi(getEnv(mosnHeartBeatExpireKey, fmt.Sprintf("%d", heartBeatExpire)))
+	if err != nil || et < 1 {
+		return time.Second * time.Duration(heartBeatExpire)
+	}
+	return time.Second * time.Duration(et)
+}
+
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
 	return fallback
+}
+
+func getRealEnv(key string) string {
+	value, _ := os.LookupEnv(key)
+	return value
 }
