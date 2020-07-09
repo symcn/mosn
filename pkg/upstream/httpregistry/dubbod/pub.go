@@ -57,11 +57,12 @@ func publish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	l.Lock()
-	if _, ok := alreadyPublish[req.Service.Interface]; ok {
+	_, ok := alreadyPublish[req.Service.Interface]
+	l.Unlock()
+	if ok {
 		response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
 		return
 	}
-	l.Unlock()
 
 	for k, v := range types.GetPodLabels() {
 		if k == "sym-group" {
@@ -98,11 +99,12 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	l.Lock()
-	if _, ok := alreadyPublish[req.Service.Interface]; !ok {
+	_, ok := alreadyPublish[req.Service.Interface]
+	l.Unlock()
+	if !ok {
 		response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
 		return
 	}
-	l.Unlock()
 
 	err = doPubUnPub(req, false)
 	if err != nil {

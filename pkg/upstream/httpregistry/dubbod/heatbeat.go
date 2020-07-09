@@ -31,7 +31,7 @@ func autoUnPub() {
 		select {
 		case <-time.After(heartBeatExpire * heartBeatNum):
 			log.DefaultLogger.Infof("heartbeat expire, unPublish all service")
-			unPublishAll()
+			go unPublishAll()
 		case <-hb:
 			log.DefaultLogger.Debugf("heartbeat.")
 		}
