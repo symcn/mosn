@@ -31,7 +31,7 @@ import (
 )
 
 var (
-	l              sync.Mutex
+	l              sync.RWMutex
 	alreadyPublish = make(map[string]pubReq)
 )
 
@@ -56,9 +56,9 @@ func publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	l.Lock()
+	l.RLock()
 	_, ok := alreadyPublish[req.Service.Interface]
-	l.Unlock()
+	l.RUnlock()
 	if ok {
 		response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
 		return
@@ -98,9 +98,9 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	l.Lock()
+	l.RLock()
 	_, ok := alreadyPublish[req.Service.Interface]
-	l.Unlock()
+	l.RUnlock()
 	if !ok {
 		response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
 		return
