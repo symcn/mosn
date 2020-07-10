@@ -26,11 +26,60 @@
 							]
 						}
 					]
+				},
+				{
+					"name": "ingress_dubbo",
+					"address": "0.0.0.0:20882",
+					"bind_port": true,
+					"filter_chains": [
+						{
+							"tls_context": {},
+							"filters": [
+								{
+									"type": "proxy",
+									"config": {
+										"downstream_protocol": "X",
+										"upstream_protocol": "X",
+										"router_config_name": "ingress_route",
+										"extend_config": {
+											"sub_protocol": "dubbo"
+										}
+									}
+								}
+							]
+						}
+					]
 				}
 			],
 			"routers": [
 				{
 					"router_config_name": "20882",
+					"virtual_hosts": [
+						{
+							"name": "provider",
+							"domains": [
+								"*"
+							],
+							"routers": [
+								{
+									"match": {
+										"headers": [
+											{
+												"name": "service",
+												"value": ".*"
+											}
+										]
+									},
+									"route": {
+										"cluster_name": "dubbo_provider_cluster"
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"router_config_name": "ingress_route",
 					"virtual_hosts": [
 						{
 							"name": "provider",
