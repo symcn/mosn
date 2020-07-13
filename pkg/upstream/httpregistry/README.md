@@ -2,7 +2,7 @@
 
 _所有的成功请求都会返回当前已经注册的服务的名称 `interface_list`，具体的`$host` `$port`按照实际情况填写_
 
-## 注册
+## provider 注册
 
 ### route
 
@@ -30,7 +30,7 @@ Service struct {
 {
   "service": {
     "interface": "com.test.cc",
-    "methods": [""],
+    "methods": [""]
   }
 }
 ```
@@ -54,7 +54,7 @@ Service struct {
 }
 ```
 
-## 取消注册
+## provider 取消注册
 
 ### route
 
@@ -84,9 +84,7 @@ type pubReq struct {
 {
   "service": {
     "interface": "com.test.cc1",
-    "methods": [""],
-    "group": "blue",
-    "version": ""
+    "methods": [""]
   }
 }
 ```
@@ -98,6 +96,110 @@ type pubReq struct {
   "code": 0,
   "msg": "unpub success",
   "interface_list": ["com.test.cc2", "com.test.cc"]
+}
+```
+
+- fail
+
+```json
+{
+  "code": 1,
+  "msg": "unpub fail, err: Path{dubbo://:@10.12.214.61:20882/?interface=com.test.cc&group=blue&version=} has not registered"
+}
+```
+
+## consumer 注册
+
+### route
+
+`$host:$port/sub`
+
+### method
+
+`POST`
+
+### request struct
+
+```golang
+Service struct {
+		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
+		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
+		Params    map[string]interface{} `json:"params"`
+	} `json:"service"`
+```
+
+### example
+
+- request
+
+```json
+{
+  "service": {
+    "interface": "com.test.cc",
+    "methods": [""]
+  }
+}
+```
+
+- succ
+
+```json
+{
+  "code": 0,
+  "msg": "subscribe success"
+}
+```
+
+- fail
+
+```json
+{
+  "code": 1,
+  "msg": "publish fail, err: Path{dubbo://:@10.12.214.61:20882/?interface=com.test.cc1&group=blue&version=} has been registered"
+}
+```
+
+## consumer 取消注册
+
+### route
+
+`$host:$port/unsub`
+
+### method
+
+`POST`
+
+### request struct
+
+```golang
+type pubReq struct {
+	Service struct {
+		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
+		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
+		Params    map[string]interface{} `json:"params"`
+	} `json:"service"`
+}
+```
+
+### example
+
+- request
+
+```json
+{
+  "service": {
+    "interface": "com.test.cc1",
+    "methods": [""]
+  }
+}
+```
+
+- succ
+
+```json
+{
+  "code": 0,
+  "msg": "unsubscribe success"
 }
 ```
 
