@@ -31,7 +31,7 @@ import (
 )
 
 var (
-	l              sync.RWMutex
+	publ           sync.RWMutex
 	alreadyPublish = make(map[string]pubReq)
 )
 
@@ -56,9 +56,9 @@ func publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	l.RLock()
+	publ.RLock()
 	_, ok := alreadyPublish[req.Service.Interface]
-	l.RUnlock()
+	publ.RUnlock()
 	if ok {
 		response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
 		return
@@ -76,9 +76,9 @@ func publish(w http.ResponseWriter, r *http.Request) {
 		response(w, resp{Errno: fail, ErrMsg: "publish fail, err: " + err.Error()})
 		return
 	}
-	l.Lock()
+	publ.Lock()
 	alreadyPublish[req.Service.Interface] = req
-	l.Unlock()
+	publ.Unlock()
 
 	select {
 	case hb <- struct{}{}:
@@ -98,9 +98,9 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	l.RLock()
+	publ.RLock()
 	_, ok := alreadyPublish[req.Service.Interface]
-	l.RUnlock()
+	publ.RUnlock()
 	if !ok {
 		response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
 		return
@@ -111,9 +111,9 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 		response(w, resp{Errno: fail, ErrMsg: "unpub fail, err: " + err.Error()})
 		return
 	}
-	l.Lock()
+	publ.Lock()
 	delete(alreadyPublish, req.Service.Interface)
-	l.Unlock()
+	publ.Unlock()
 
 	select {
 	case hb <- struct{}{}:
@@ -184,8 +184,8 @@ func unPublishAll() (notUnpub []string) {
 	}
 
 	notUnpub = make([]string, 0, len(alreadyPublish))
-	l.Lock()
-	defer l.Unlock()
+	publ.Lock()
+	defer publ.Unlock()
 	for _, req := range alreadyPublish {
 		if e := doPubUnPub(req, false); e != nil {
 			log.DefaultLogger.Errorf("can not unpublish service {%s} err:%+v", req.Service.Interface, e.Error())

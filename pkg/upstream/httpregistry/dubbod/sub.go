@@ -18,10 +18,19 @@ package dubbod
 
 import (
 	"fmt"
-	dubbocommon "github.com/mosn/registry/dubbo/common"
-	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
 	"net/http"
 	"net/url"
+	"sync"
+	"time"
+
+	dubbocommon "github.com/mosn/registry/dubbo/common"
+	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
+	"mosn.io/mosn/pkg/log"
+)
+
+var (
+	subl       sync.RWMutex
+	alreadySub = make(map[string]subReq)
 )
 
 // subscribe a service from registry
@@ -33,10 +42,27 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	subl.RLock()
+	_, ok := alreadySub[req.Service.Interface]
+	subl.RUnlock()
+	if ok {
+		response(w, resp{Errno: succ, ErrMsg: "subscribe success"})
+		return
+	}
+
 	err = doSubUnsub(req, true)
 	if err != nil {
 		response(w, resp{Errno: fail, ErrMsg: "subscribe fail, err: " + err.Error()})
 		return
+	}
+
+	subl.Lock()
+	alreadySub[req.Service.Interface] = req
+	subl.Unlock()
+
+	select {
+	case hb <- struct{}{}:
+	case <-time.After(time.Millisecond * 50):
 	}
 
 	response(w, resp{Errno: succ, ErrMsg: "subscribe success"})
@@ -50,30 +76,47 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 		response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})
 		return
 	}
-	err = doSubUnsub(req, false)
 
+	subl.RLock()
+	_, ok := alreadySub[req.Service.Interface]
+	subl.RUnlock()
+	if !ok {
+		response(w, resp{Errno: succ, ErrMsg: "unsubscribe success"})
+		return
+	}
+
+	err = doSubUnsub(req, false)
 	if err != nil {
 		response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})
 		return
 	}
 
+	subl.Lock()
+	delete(alreadySub, req.Service.Interface)
+	subl.Unlock()
+
+	select {
+	case hb <- struct{}{}:
+	case <-time.After(time.Millisecond * 50):
+	}
+
 	response(w, resp{Errno: succ, ErrMsg: "unsubscribe success"})
 }
 
-// map[string]registry.NotifyListener{}
-//var dubboInterface2listener = sync.Map{}
-
 func doSubUnsub(req subReq, sub bool) error {
-	zookeeperAddr := GetZookeeperAddr()
+	addr := GetZookeeperAddr()
 	var registryPath = registryPathTpl.ExecuteString(map[string]interface{}{
-		"addr": zookeeperAddr,
+		"addr": addr,
 	})
-	registryURL, _ := dubbocommon.NewURL(registryPath,
+	registryURL, err := dubbocommon.NewURL(registryPath,
 		dubbocommon.WithParams(url.Values{
 			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{"5s"},
 			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(dubbocommon.CONSUMER)},
 		}),
 	)
+	if err != nil {
+		return err
+	}
 
 	servicePath := req.Service.Interface // com.mosn.test.UserService
 	reg, err := getRegistry(servicePath, dubbocommon.CONSUMER, &registryURL)
@@ -83,7 +126,6 @@ func doSubUnsub(req subReq, sub bool) error {
 
 	vals := url.Values{
 		dubboconsts.ROLE_KEY: []string{fmt.Sprint(dubbocommon.CONSUMER)},
-		//dubboconsts.GROUP_KEY: []string{req.Service.Group},
 	}
 	for k, v := range req.Service.Params {
 		vals.Set(k, fmt.Sprint(v))
@@ -107,28 +149,25 @@ func doSubUnsub(req subReq, sub bool) error {
 		}
 	}
 
-	//if sub {
-	//	// listen to provider change events
-	//	var l = &listener{}
-	//	go reg.Subscribe(dubboURL, l)
-	//	dubboInterface2listener.Store(servicePath, l)
-	//
-	//	err = addRouteRule(servicePath)
-	//	if err != nil {
-	//		return err
-	//	}
-	//} else {
-	//	l, ok := dubboInterface2listener.Load(servicePath)
-	//	if ok {
-	//		err = reg.UnSubscribe(dubboURL, l.(*listener))
-	//		if err != nil {
-	//			return err
-	//		}
-	//	}
-	//
-	//	// NOTICE: router rule will remain in the router manager, but it's ok
-	//}
-
 	return nil
+}
 
+func unSubAll() (notUnsub []string) {
+	if len(alreadySub) == 0 {
+		return nil
+	}
+
+	notUnsub = make([]string, 0, len(alreadySub))
+	subl.Lock()
+	defer subl.Unlock()
+	for _, req := range alreadySub {
+		if e := doSubUnsub(req, false); e != nil {
+			log.DefaultLogger.Errorf("can not unsubscribe service {%s} err:%+v", req.Service.Interface, e.Error())
+			notUnsub = append(notUnsub, req.Service.Interface)
+		} else {
+			log.DefaultLogger.Infof("unsubscribe service {%s} succ", req.Service.Interface)
+		}
+	}
+	alreadySub = make(map[string]subReq)
+	return notUnsub
 }

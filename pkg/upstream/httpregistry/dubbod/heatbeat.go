@@ -18,7 +18,7 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 	//TODO check some status
 	select {
 	case hb <- struct{}{}:
-	case <-time.After(time.Second * 5):
+	case <-time.After(time.Millisecond * 50):
 		response(w, resp{Errno: fail, ErrMsg: "ack fail timeout"})
 		return
 	}
@@ -30,8 +30,9 @@ func autoUnPub() {
 	for {
 		select {
 		case <-time.After(GetHeartExpireTime()):
-			log.DefaultLogger.Infof("heartbeat expire, unPublish all service")
+			log.DefaultLogger.Infof("heartbeat expire, unPublish unSub all service")
 			go unPublishAll()
+			go unSubAll()
 		case <-hb:
 			log.DefaultLogger.Debugf("heartbeat.")
 		}
