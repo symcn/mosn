@@ -20,7 +20,7 @@ package dubbod
 type subReq struct {
 	Service struct {
 		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
+		Methods   []string               `json:"methods"`                      // eg. GetUser,GetProfile,UpdateName
 		Params    map[string]interface{} `json:"params"`
 	} `json:"service"`
 }
@@ -29,7 +29,7 @@ type subReq struct {
 type pubReq struct {
 	Service struct {
 		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
+		Methods   []string               `json:"methods"`                      // eg. GetUser,GetProfile,UpdateName
 		Params    map[string]interface{} `json:"params"`
 	} `json:"service"`
 }
