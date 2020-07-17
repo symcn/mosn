@@ -68,7 +68,11 @@ func publish(w http.ResponseWriter, r *http.Request) {
 		if k == "sym-group" {
 			k = "flag"
 		}
-		req.Service.Params[k] = v
+
+		// avoid recover params
+		if _, ok := req.Service.Params[k]; !ok {
+			req.Service.Params[k] = v
+		}
 	}
 
 	err = doPubUnPub(req, true)
