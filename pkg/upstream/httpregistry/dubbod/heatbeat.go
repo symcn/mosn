@@ -7,14 +7,27 @@ import (
 	"mosn.io/mosn/pkg/log"
 )
 
-var hb chan struct{}
+var (
+	hb     chan struct{}
+	isMock bool
+)
 
 func init() {
 	hb = make(chan struct{}, 3)
 	go autoUnPub()
 }
 
+// !import release not pub this route
+func heartbeatMock(w http.ResponseWriter, r *http.Request) {
+	isMock = !isMock
+	response(w, resp{Errno: succ, ErrMsg: "set mock success", InterfaceList: getInterfaceList()})
+}
+
 func heartbeat(w http.ResponseWriter, r *http.Request) {
+	if isMock {
+		response(w, resp{Errno: fail, ErrMsg: "mock exception"})
+		return
+	}
 	//TODO check some status
 	select {
 	case hb <- struct{}{}:

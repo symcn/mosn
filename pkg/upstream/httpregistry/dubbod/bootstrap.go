@@ -17,11 +17,12 @@
 package dubbod
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi"
 	dubbologger "github.com/mosn/registry/dubbo/common/logger"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/pkg/utils"
-	"net/http"
 )
 
 // init the http api for application when application bootstrap
@@ -30,6 +31,7 @@ func Init() {
 	// 1. init router
 	r := chi.NewRouter()
 	r.Get("/heartbeat", heartbeat)
+	r.Get("/heartbeat/mock", heartbeatMock)
 	r.Post("/sub", subscribe)
 	r.Post("/unsub", unsubscribe)
 	r.Post("/pub", publish)
