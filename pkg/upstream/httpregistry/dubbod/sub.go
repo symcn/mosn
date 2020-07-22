@@ -80,13 +80,13 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 	subl.Lock()
 	defer subl.Unlock()
 
-	_, ok := alreadySub[req.Service.Interface]
+	storeReq, ok := alreadySub[req.Service.Interface]
 	if !ok {
 		response(w, resp{Errno: succ, ErrMsg: "unsubscribe success"})
 		return
 	}
 
-	err = doSubUnsub(req, false)
+	err = doSubUnsub(storeReq, false)
 	if err != nil {
 		log.DefaultLogger.Errorf("unsubscribe error:%+v", err)
 		response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})

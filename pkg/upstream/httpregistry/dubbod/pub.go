@@ -105,19 +105,19 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 	publ.Lock()
 	defer publ.Unlock()
 
-	_, ok := alreadyPublish[req.Service.Interface]
+	storeReq, ok := alreadyPublish[req.Service.Interface]
 	if !ok {
 		response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
 		return
 	}
 
-	err = doPubUnPub(req, false)
+	err = doPubUnPub(storeReq, false)
 	if err != nil {
 		log.DefaultLogger.Errorf("unpublish error:%+v", err)
 		response(w, resp{Errno: fail, ErrMsg: "unpub fail, err: " + err.Error()})
 		return
 	}
-	delete(alreadyPublish, req.Service.Interface)
+	delete(alreadyPublish, storeReq.Service.Interface)
 
 	select {
 	case hb <- struct{}{}:
