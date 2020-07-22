@@ -26,6 +26,7 @@ import (
 	dubbocommon "github.com/mosn/registry/dubbo/common"
 	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
 	"mosn.io/mosn/pkg/log"
+	"mosn.io/mosn/pkg/types"
 )
 
 var (
@@ -50,6 +51,17 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		response(w, resp{Errno: succ, ErrMsg: "subscribe success"})
 		return
+	}
+
+	for k, v := range types.GetPodLabels() {
+		if k == "sym-group" {
+			k = "flag"
+		}
+
+		// avoid recover params
+		if _, ok := req.Service.Params[k]; !ok {
+			req.Service.Params[k] = v
+		}
 	}
 
 	err = doSubUnsub(req, true)
