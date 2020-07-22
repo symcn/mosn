@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	subl       sync.RWMutex
+	subl       sync.Mutex
 	alreadySub = make(map[string]subReq)
 )
 
@@ -38,13 +38,15 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 	var req subReq
 	err := bind(r, &req)
 	if err != nil {
+		log.DefaultLogger.Errorf("subscribe error:%+v", err)
 		response(w, resp{Errno: fail, ErrMsg: "subscribe fail, err: " + err.Error()})
 		return
 	}
 
-	subl.RLock()
+	subl.Lock()
+	defer subl.Unlock()
+
 	_, ok := alreadySub[req.Service.Interface]
-	subl.RUnlock()
 	if ok {
 		response(w, resp{Errno: succ, ErrMsg: "subscribe success"})
 		return
@@ -56,9 +58,7 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subl.Lock()
 	alreadySub[req.Service.Interface] = req
-	subl.Unlock()
 
 	select {
 	case hb <- struct{}{}:
@@ -77,9 +77,10 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subl.RLock()
+	subl.Lock()
+	defer subl.Unlock()
+
 	_, ok := alreadySub[req.Service.Interface]
-	subl.RUnlock()
 	if !ok {
 		response(w, resp{Errno: succ, ErrMsg: "unsubscribe success"})
 		return
@@ -87,13 +88,12 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 
 	err = doSubUnsub(req, false)
 	if err != nil {
+		log.DefaultLogger.Errorf("unsubscribe error:%+v", err)
 		response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})
 		return
 	}
 
-	subl.Lock()
 	delete(alreadySub, req.Service.Interface)
-	subl.Unlock()
 
 	select {
 	case hb <- struct{}{}:
