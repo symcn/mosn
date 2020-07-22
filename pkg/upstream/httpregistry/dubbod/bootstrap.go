@@ -31,7 +31,6 @@ func Init() {
 	// 1. init router
 	r := chi.NewRouter()
 	r.Get("/heartbeat", heartbeat)
-	r.Get("/heartbeat/mock", heartbeatMock)
 	r.Post("/sub", subscribe)
 	r.Post("/unsub", unsubscribe)
 	r.Post("/pub", publish)
