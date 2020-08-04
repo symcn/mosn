@@ -68,6 +68,8 @@ func publish(w http.ResponseWriter, r *http.Request) {
 	for k, v := range types.GetPodLabels() {
 		if k == "sym-group" {
 			k = "flag"
+			// req.Service.Params["flag"] = v
+			// continue
 		}
 
 		// avoid recover params
