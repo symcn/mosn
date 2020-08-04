@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	api.RegisterStream("dubbo_demo", CreateDubbo)
+	api.RegisterStream("dubbo_stream", CreateDubbo)
 }
 
 func CreateDubbo(conf map[string]interface{}) (api.StreamFilterChainFactory, error) {

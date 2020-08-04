@@ -34,7 +34,7 @@
 					],
 					"stream_filters": [
 						{
-							"type": "dubbo_demo",
+							"type": "dubbo_stream",
 							"config": {}
 						}
 					]
@@ -64,7 +64,7 @@
 					],
 					"stream_filters": [
 						{
-							"type": "dubbo_demo",
+							"type": "dubbo_stream",
 							"config": {}
 						}
 					]
