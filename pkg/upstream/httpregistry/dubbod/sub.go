@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -54,6 +55,7 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for k, v := range types.GetPodLabels() {
+		// ! import: should check need rewrite
 		if k == "sym-group" {
 			k = "flag"
 		}
@@ -116,15 +118,18 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 }
 
 func doSubUnsub(req subReq, sub bool) error {
-	addr := GetZookeeperAddr()
+	addrStr := GetZookeeperAddr()
+	addresses := strings.Split(addrStr, ",")
+	address := addresses[0]
 	var registryPath = registryPathTpl.ExecuteString(map[string]interface{}{
-		"addr": addr,
+		"addr": address,
 	})
 	registryURL, err := dubbocommon.NewURL(registryPath,
 		dubbocommon.WithParams(url.Values{
-			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{"5s"},
+			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZookeeperTimeout()},
 			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(dubbocommon.CONSUMER)},
 		}),
+		dubbocommon.WithLocation(addrStr),
 	)
 	if err != nil {
 		return err

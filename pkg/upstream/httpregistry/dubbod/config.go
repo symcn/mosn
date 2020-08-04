@@ -14,6 +14,8 @@ const (
 	defaultHttpPort             = 12181
 	zookeeperAddrEnvName        = "MOSN_ZK_ADDRESS"
 	defaultZookeeperAddr        = "127.0.0.1:2181"
+	zookeeperConnectTimeoutName = "MOSN_ZK_TIMEOUT"
+	zookeeperConnectTimeoutStr  = "5s"
 	zookeeper                   = "zookeeper"
 	dubbo                       = "dubbo"
 	ip                          = "ip"
@@ -36,6 +38,10 @@ func GetHttpAddr() string {
 
 func GetZookeeperAddr() string {
 	return getEnv(zookeeperAddrEnvName, defaultZookeeperAddr)
+}
+
+func GetZookeeperTimeout() string {
+	return getEnv(zookeeperConnectTimeoutName, zookeeperConnectTimeoutStr)
 }
 
 func GetExportDubboPort() int {

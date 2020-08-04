@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -132,18 +133,20 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 }
 
 func doPubUnPub(req pubReq, pub bool) error {
-	addr := GetZookeeperAddr()
+	addrStr := GetZookeeperAddr()
+	addresses := strings.Split(addrStr, ",")
+	address := addresses[0]
 	var registryPath = registryPathTpl.ExecuteString(map[string]interface{}{
-		"addr": addr,
+		"addr": address,
 	})
 
 	registryURL, err := dubbocommon.NewURL(registryPath,
 		dubbocommon.WithParams(url.Values{
 			dubboconsts.REGISTRY_KEY:         []string{zookeeper},
-			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{"5s"},
+			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZookeeperTimeout()},
 			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(dubbocommon.PROVIDER)},
 		}),
-		dubbocommon.WithLocation(addr),
+		dubbocommon.WithLocation(addrStr),
 	)
 	if err != nil {
 		return err
