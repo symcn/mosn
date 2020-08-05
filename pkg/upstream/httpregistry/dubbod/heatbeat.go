@@ -25,7 +25,7 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response(w, resp{Errno: succ, ErrMsg: "ack success", InterfaceList: getInterfaceList()})
+	response(w, resp{Errno: succ, ErrMsg: "ack success", PubInterfaceList: getPubInterfaceList(), SubInterfaceList: getSubInterfaceList()})
 }
 
 func autoUnPub() {

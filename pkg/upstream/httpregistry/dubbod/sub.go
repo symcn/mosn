@@ -35,6 +35,17 @@ var (
 	alreadySub = make(map[string]subReq)
 )
 
+func getSubInterfaceList() []string {
+	if len(alreadySub) == 0 {
+		return nil
+	}
+	result := make([]string, 0, len(alreadySub))
+	for i := range alreadySub {
+		result = append(result, i)
+	}
+	return result
+}
+
 // subscribe a service from registry
 func subscribe(w http.ResponseWriter, r *http.Request) {
 	var req subReq
@@ -50,7 +61,7 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 
 	_, ok := alreadySub[req.Service.Interface]
 	if ok {
-		response(w, resp{Errno: succ, ErrMsg: "subscribe success"})
+		response(w, resp{Errno: succ, ErrMsg: "subscribe success", SubInterfaceList: getSubInterfaceList()})
 		return
 	}
 
@@ -79,7 +90,7 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 	case <-time.After(time.Millisecond * 50):
 	}
 
-	response(w, resp{Errno: succ, ErrMsg: "subscribe success"})
+	response(w, resp{Errno: succ, ErrMsg: "subscribe success", SubInterfaceList: getSubInterfaceList()})
 }
 
 // unsubscribe a service from registry
@@ -96,7 +107,7 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 
 	storeReq, ok := alreadySub[req.Service.Interface]
 	if !ok {
-		response(w, resp{Errno: succ, ErrMsg: "unsubscribe success"})
+		response(w, resp{Errno: succ, ErrMsg: "unsubscribe success", SubInterfaceList: getSubInterfaceList()})
 		return
 	}
 
@@ -114,7 +125,7 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 	case <-time.After(time.Millisecond * 50):
 	}
 
-	response(w, resp{Errno: succ, ErrMsg: "unsubscribe success"})
+	response(w, resp{Errno: succ, ErrMsg: "unsubscribe success", SubInterfaceList: getSubInterfaceList()})
 }
 
 func doSubUnsub(req subReq, sub bool) error {

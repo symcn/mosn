@@ -36,7 +36,7 @@ var (
 	alreadyPublish = make(map[string]pubReq)
 )
 
-func getInterfaceList() []string {
+func getPubInterfaceList() []string {
 	if len(alreadyPublish) == 0 {
 		return nil
 	}
@@ -62,7 +62,7 @@ func publish(w http.ResponseWriter, r *http.Request) {
 
 	_, ok := alreadyPublish[req.Service.Interface]
 	if ok {
-		response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
+		response(w, resp{Errno: succ, ErrMsg: "publish success", PubInterfaceList: getPubInterfaceList()})
 		return
 	}
 
@@ -92,7 +92,7 @@ func publish(w http.ResponseWriter, r *http.Request) {
 	case <-time.After(time.Millisecond * 50):
 	}
 
-	response(w, resp{Errno: succ, ErrMsg: "publish success", InterfaceList: getInterfaceList()})
+	response(w, resp{Errno: succ, ErrMsg: "publish success", PubInterfaceList: getPubInterfaceList()})
 	return
 }
 
@@ -110,7 +110,7 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 
 	storeReq, ok := alreadyPublish[req.Service.Interface]
 	if !ok {
-		response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
+		response(w, resp{Errno: succ, ErrMsg: "unpub success", PubInterfaceList: getPubInterfaceList()})
 		return
 	}
 
@@ -127,7 +127,7 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 	case <-time.After(time.Millisecond * 50):
 	}
 
-	response(w, resp{Errno: succ, ErrMsg: "unpub success", InterfaceList: getInterfaceList()})
+	response(w, resp{Errno: succ, ErrMsg: "unpub success", PubInterfaceList: getPubInterfaceList()})
 	return
 
 }
