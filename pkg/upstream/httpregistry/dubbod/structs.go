@@ -23,6 +23,8 @@ type subReq struct {
 		Methods   []string               `json:"methods"`                      // eg. GetUser,GetProfile,UpdateName
 		Params    map[string]interface{} `json:"params"`
 	} `json:"service"`
+	Host string `json:"host,omitempty"`
+	Port int    `json:"port,omitempty"`
 }
 
 // for pub && unpub
@@ -32,6 +34,8 @@ type pubReq struct {
 		Methods   []string               `json:"methods"`                      // eg. GetUser,GetProfile,UpdateName
 		Params    map[string]interface{} `json:"params"`
 	} `json:"service"`
+	Host string `json:"host,omitempty"`
+	Port int    `json:"port,omitempty"`
 }
 
 // response struct for all requests

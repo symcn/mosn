@@ -159,11 +159,18 @@ func doPubUnPub(req pubReq, pub bool) error {
 		return err
 	}
 
-	var dubboPath = dubboPathTpl.ExecuteString(map[string]interface{}{
-		ip:            trace.GetIp(),
-		port:          fmt.Sprintf("%d", GetExportDubboPort()),
+	executeMap := map[string]interface{}{
 		interfaceName: req.Service.Interface,
-	})
+	}
+	if IsCenter() {
+		executeMap[ip] = req.Host
+		executeMap[port] = fmt.Sprintf("%d", req.Port)
+	} else {
+		executeMap[ip] = trace.GetIp()
+		executeMap[port] = fmt.Sprintf("%d", GetExportDubboPort())
+	}
+
+	var dubboPath = dubboPathTpl.ExecuteString(executeMap)
 	vals := url.Values{
 		dubboconsts.ROLE_KEY: []string{fmt.Sprint(dubbocommon.PROVIDER)},
 		//dubboconsts.GROUP_KEY:     []string{req.Service.Group},

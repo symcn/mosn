@@ -158,20 +158,28 @@ func doSubUnsub(req subReq, sub bool) error {
 	for k, v := range req.Service.Params {
 		vals.Set(k, fmt.Sprint(v))
 	}
-	dubboURL := dubbocommon.NewURLWithOptions(
+
+	var dubboPath = dubboPathTpl.ExecuteString(map[string]interface{}{
+		interfaceName: req.Service.Interface,
+		ip:            req.Host,
+		port:          fmt.Sprintf("%d", req.Port),
+	})
+
+	dubboURL, _ := dubbocommon.NewURL(dubboPath,
 		dubbocommon.WithPath(servicePath),
 		dubbocommon.WithProtocol(dubbo), // this protocol is used to compare the url, must provide
 		dubbocommon.WithParams(vals),
-		dubbocommon.WithMethods(req.Service.Methods))
+		dubbocommon.WithMethods(req.Service.Methods),
+	)
 
 	// register consumer to registry
 	if sub {
-		err = reg.Register(*dubboURL)
+		err = reg.Register(dubboURL)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = reg.UnRegister(*dubboURL)
+		err = reg.UnRegister(dubboURL)
 		if err != nil {
 			return err
 		}

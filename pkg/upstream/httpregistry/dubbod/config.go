@@ -9,7 +9,7 @@ import (
 	"mosn.io/mosn/pkg/log"
 )
 
-const (
+var (
 	mosnRegistryHttpPortEnvName = "MOSN_REGISTRY_HTTP_PORT"
 	defaultHttpPort             = 12181
 	zookeeperAddrEnvName        = "MOSN_ZK_ADDRESS"
@@ -25,6 +25,10 @@ const (
 	mosnExportDubboPort         = "MOSN_EXPORT_PORT"
 	heartBeatExpire             = 15
 	mosnHeartBeatExpireKey      = "MOSN_HEART_EXPIRE"
+
+	// if is center, mosn will use request host and port
+	// if not use request host and MOSN_EXPORT_PORT
+	isCenterKey = "MOSN_CENTER_MODE"
 )
 
 func GetHttpAddr() string {
@@ -63,6 +67,15 @@ func GetHeartExpireTime() time.Duration {
 		return time.Second * time.Duration(heartBeatExpire)
 	}
 	return time.Second * time.Duration(et)
+}
+
+func IsCenter() bool {
+	switch getEnv(isCenterKey, "false") {
+	case "true", "t":
+		return true
+	default:
+		return false
+	}
 }
 
 func getEnv(key, fallback string) string {
