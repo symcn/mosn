@@ -15,7 +15,7 @@ const (
 	zookeeperAddrEnvName        = "MOSN_ZK_ADDRESS"
 	defaultZookeeperAddr        = "127.0.0.1:2181"
 	zookeeperConnectTimeoutName = "MOSN_ZK_TIMEOUT"
-	zookeeperConnectTimeoutStr  = "5s"
+	zookeeperConnectTimeout     = 5
 	zookeeper                   = "zookeeper"
 	dubbo                       = "dubbo"
 	ip                          = "ip"
@@ -41,7 +41,11 @@ func GetZookeeperAddr() string {
 }
 
 func GetZookeeperTimeout() string {
-	return getEnv(zookeeperConnectTimeoutName, zookeeperConnectTimeoutStr)
+	et, err := strconv.Atoi(getEnv(zookeeperConnectTimeoutName, fmt.Sprintf("%d", zookeeperConnectTimeout)))
+	if err != nil || et < 1 {
+		et = zookeeperConnectTimeout
+	}
+	return fmt.Sprintf("%ds", et)
 }
 
 func GetExportDubboPort() int {
