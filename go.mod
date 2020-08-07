@@ -35,7 +35,8 @@ require (
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563
 	github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da
-	github.com/stretchr/testify v1.5.1
+	github.com/stretchr/testify v1.6.1
+	github.com/symcn/registry v0.0.0-20200807093229-9f78aeeb3884
 	github.com/tjfoc/gmsm v0.0.0-20190220013605-bfb01827afcb // indirect
 	github.com/urfave/cli v1.20.0
 	github.com/valyala/fasthttp v1.2.0

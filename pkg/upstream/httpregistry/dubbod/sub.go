@@ -20,12 +20,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 
-	dubbocommon "github.com/mosn/registry/dubbo/common"
-	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
+	dubbocommon "github.com/symcn/registry/dubbo/common"
+	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/types"
 )
@@ -129,27 +128,12 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 }
 
 func doSubUnsub(req subReq, sub bool) error {
-	addrStr := GetZookeeperAddr()
-	addresses := strings.Split(addrStr, ",")
-	address := addresses[0]
-	var registryPath = registryPathTpl.ExecuteString(map[string]interface{}{
-		"addr": address,
-	})
-	registryURL, err := dubbocommon.NewURL(registryPath,
-		dubbocommon.WithParams(url.Values{
-			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZookeeperTimeout()},
-			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(dubbocommon.CONSUMER)},
-		}),
-		dubbocommon.WithLocation(addrStr),
-	)
+	reg, err := getRegistry()
 	if err != nil {
 		return err
 	}
-
-	servicePath := req.Service.Interface // com.mosn.test.UserService
-	reg, err := getRegistry(servicePath, dubbocommon.CONSUMER, &registryURL)
-	if err != nil {
-		return err
+	if reg == nil {
+		return fmt.Errorf("zk cache error")
 	}
 
 	vals := url.Values{
@@ -166,7 +150,7 @@ func doSubUnsub(req subReq, sub bool) error {
 	})
 
 	dubboURL, _ := dubbocommon.NewURL(dubboPath,
-		dubbocommon.WithPath(servicePath),
+		dubbocommon.WithPath(req.Service.Interface),
 		dubbocommon.WithProtocol(dubbo), // this protocol is used to compare the url, must provide
 		dubbocommon.WithParams(vals),
 		dubbocommon.WithMethods(req.Service.Methods),
@@ -174,12 +158,12 @@ func doSubUnsub(req subReq, sub bool) error {
 
 	// register consumer to registry
 	if sub {
-		err = reg.Register(dubboURL)
+		err = reg.Register(&dubboURL)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = reg.UnRegister(dubboURL)
+		err = reg.UnRegister(&dubboURL)
 		if err != nil {
 			return err
 		}

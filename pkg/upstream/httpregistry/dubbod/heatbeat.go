@@ -14,12 +14,26 @@ var (
 )
 
 func init() {
-	hb = make(chan struct{}, 10)
+	hb = make(chan struct{}, 3)
 	go loopCheckHeartbeat()
 	go autoUnPub()
 }
 
 func heartbeat(w http.ResponseWriter, r *http.Request) {
+	reg, err := getRegistry()
+	if err != nil {
+		response(w, resp{Errno: fail, ErrMsg: err.Error()})
+		return
+	}
+	if reg == nil {
+		response(w, resp{Errno: fail, ErrMsg: "zk cache error"})
+		return
+	}
+	if !reg.ConnectState() {
+		response(w, resp{Errno: fail, ErrMsg: "zk not connected."})
+		return
+	}
+
 	// TODO check some status
 	select {
 	case hb <- struct{}{}:

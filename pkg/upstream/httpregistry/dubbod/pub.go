@@ -20,12 +20,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 
-	dubbocommon "github.com/mosn/registry/dubbo/common"
-	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
+	dubbocommon "github.com/symcn/registry/dubbo/common"
+	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/trace"
 	"mosn.io/mosn/pkg/types"
@@ -133,30 +132,12 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 }
 
 func doPubUnPub(req pubReq, pub bool) error {
-	addrStr := GetZookeeperAddr()
-	addresses := strings.Split(addrStr, ",")
-	address := addresses[0]
-	var registryPath = registryPathTpl.ExecuteString(map[string]interface{}{
-		"addr": address,
-	})
-
-	registryURL, err := dubbocommon.NewURL(registryPath,
-		dubbocommon.WithParams(url.Values{
-			dubboconsts.REGISTRY_KEY:         []string{zookeeper},
-			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZookeeperTimeout()},
-			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(dubbocommon.PROVIDER)},
-		}),
-		dubbocommon.WithLocation(addrStr),
-	)
+	reg, err := getRegistry()
 	if err != nil {
 		return err
 	}
-
-	// find registry from cache
-	registryCacheKey := req.Service.Interface
-	reg, err := getRegistry(registryCacheKey, dubbocommon.PROVIDER, &registryURL)
-	if err != nil {
-		return err
+	if reg == nil {
+		return fmt.Errorf("zk cache error")
 	}
 
 	executeMap := map[string]interface{}{
@@ -186,11 +167,11 @@ func doPubUnPub(req pubReq, pub bool) error {
 
 	if pub {
 		// publish this service
-		return reg.Register(dubboURL)
+		return reg.Register(&dubboURL)
 	}
 
 	// unpublish this service
-	return reg.UnRegister(dubboURL)
+	return reg.UnRegister(&dubboURL)
 
 }
 

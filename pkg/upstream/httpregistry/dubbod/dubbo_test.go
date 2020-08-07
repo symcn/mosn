@@ -11,12 +11,12 @@ import (
 
 	"bou.ke/monkey"
 	"github.com/go-chi/chi"
-	registry "github.com/mosn/registry/dubbo"
-	dubbocommon "github.com/mosn/registry/dubbo/common"
-	dubboconsts "github.com/mosn/registry/dubbo/common/constant"
-	"github.com/mosn/registry/dubbo/remoting"
-	zkreg "github.com/mosn/registry/dubbo/zookeeper"
 	"github.com/stretchr/testify/assert"
+	registry "github.com/symcn/registry/dubbo"
+	dubbocommon "github.com/symcn/registry/dubbo/common"
+	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
+	"github.com/symcn/registry/dubbo/remoting"
+	zkreg "github.com/symcn/registry/dubbo/zookeeper"
 	"mosn.io/mosn/pkg/upstream/cluster"
 	_ "mosn.io/mosn/pkg/upstream/cluster"
 )

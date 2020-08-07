@@ -20,7 +20,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	dubbologger "github.com/mosn/registry/dubbo/common/logger"
+	dubbologger "github.com/symcn/registry/dubbo/common/logger"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/pkg/utils"
 )

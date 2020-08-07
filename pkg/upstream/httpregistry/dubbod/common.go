@@ -20,22 +20,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 
+	"github.com/mosn/binding"
+	dubboreg "github.com/symcn/registry/dubbo"
+	dubbocommon "github.com/symcn/registry/dubbo/common"
+	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
+	zkreg "github.com/symcn/registry/dubbo/zookeeper"
+	"github.com/valyala/fasttemplate"
 	v2 "mosn.io/mosn/pkg/config/v2"
 	routerAdapter "mosn.io/mosn/pkg/router"
-
-	"github.com/mosn/binding"
-	dubboreg "github.com/mosn/registry/dubbo"
-	dubbocommon "github.com/mosn/registry/dubbo/common"
-	zkreg "github.com/mosn/registry/dubbo/zookeeper"
-	"github.com/valyala/fasttemplate"
 )
 
 var (
 	dubboPathTpl          = fasttemplate.New("dubbo://{{ip}}:{{port}}/{{interface}}", "{{", "}}")
 	registryPathTpl       = fasttemplate.New("registry://{{addr}}", "{{", "}}")
 	dubboRouterConfigName = "dubbo" // keep the same with the router config name in mosn_config.json
+	registryCacheKey      = "default"
+	registrylock          sync.Mutex
 )
 
 const (
@@ -46,27 +50,44 @@ const (
 // /com.test.cch.UserService --> zk client
 var registryClientCache = sync.Map{}
 
-func getRegistry(registryCacheKey string, role int, registryURL *dubbocommon.URL) (dubboreg.Registry, error) {
-
-	registryCacheKey = registryCacheKey + "#" + fmt.Sprint(role)
+func getRegistry() (dubboreg.Registry, error) {
 	regInterface, ok := registryClientCache.Load(registryCacheKey)
-
-	var (
-		reg dubboreg.Registry
-		err error
-	)
-
-	if !ok {
-		// init registry
-		reg, err = zkreg.NewZkRegistry(registryURL)
-		// store registry object to global cache
-		if err == nil {
-			registryClientCache.Store(registryCacheKey, reg)
-		}
-	} else {
+	var reg dubboreg.Registry
+	if ok {
 		reg = regInterface.(dubboreg.Registry)
+		return reg, nil
 	}
 
+	registrylock.Lock()
+	defer registrylock.Unlock()
+
+	regInterface, ok = registryClientCache.Load(registryCacheKey)
+	if ok {
+		reg = regInterface.(dubboreg.Registry)
+		return reg, nil
+	}
+
+	addrStr := GetZookeeperAddr()
+	addresses := strings.Split(addrStr, ",")
+	address := addresses[0]
+	var registryPath = registryPathTpl.ExecuteString(map[string]interface{}{
+		"addr": address,
+	})
+
+	registryURL, err := dubbocommon.NewURL(registryPath,
+		dubbocommon.WithParams(url.Values{
+			dubboconsts.REGISTRY_KEY:         []string{zookeeper},
+			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZookeeperTimeout()},
+			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(dubbocommon.PROVIDER)},
+		}),
+		dubbocommon.WithLocation(addrStr),
+	)
+	// init registry
+	reg, err = zkreg.NewZkRegistry(&registryURL)
+	// store registry object to global cache
+	if err == nil {
+		registryClientCache.Store(registryCacheKey, reg)
+	}
 	return reg, err
 }
 
