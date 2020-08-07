@@ -48,22 +48,25 @@ const (
 )
 
 // /com.test.cch.UserService --> zk client
-var registryClientCache = sync.Map{}
+var registryClientCache = make(map[string]dubboreg.Registry, 3)
 
 func getRegistry() (dubboreg.Registry, error) {
-	regInterface, ok := registryClientCache.Load(registryCacheKey)
-	var reg dubboreg.Registry
+	var (
+		reg dubboreg.Registry
+		ok  bool
+		err error
+	)
+
+	reg, ok = registryClientCache[registryCacheKey]
 	if ok {
-		reg = regInterface.(dubboreg.Registry)
 		return reg, nil
 	}
 
 	registrylock.Lock()
 	defer registrylock.Unlock()
 
-	regInterface, ok = registryClientCache.Load(registryCacheKey)
+	reg, ok = registryClientCache[registryCacheKey]
 	if ok {
-		reg = regInterface.(dubboreg.Registry)
 		return reg, nil
 	}
 
@@ -86,7 +89,7 @@ func getRegistry() (dubboreg.Registry, error) {
 	reg, err = zkreg.NewZkRegistry(&registryURL)
 	// store registry object to global cache
 	if err == nil {
-		registryClientCache.Store(registryCacheKey, reg)
+		registryClientCache[registryCacheKey] = reg
 	}
 	return reg, err
 }
