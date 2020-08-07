@@ -43,8 +43,10 @@ func (d *dubboFilter) OnReceive(ctx context.Context, headers api.HeaderMap, buf 
 
 	service, ok := headers.Get(dubbo.ServiceNameHeader)
 	if ok {
+		// adapte dubbo service to http host
 		headers.Set(protocol.MosnHeaderHostKey, service)
 	}
+	// because use http rule, so should add default path
 	headers.Set(protocol.MosnHeaderPathKey, "/")
 
 	method, _ := headers.Get(dubbo.MethodNameHeader)
