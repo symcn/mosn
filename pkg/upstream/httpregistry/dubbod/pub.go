@@ -23,6 +23,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/symcn/registry/dubbo/common"
 	dubbocommon "github.com/symcn/registry/dubbo/common"
 	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
 	"mosn.io/mosn/pkg/log"
@@ -132,7 +133,7 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 }
 
 func doPubUnPub(req pubReq, pub bool) error {
-	reg, err := getRegistry()
+	reg, err := getRegistry(common.PROVIDER)
 	if err != nil {
 		return err
 	}

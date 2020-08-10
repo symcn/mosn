@@ -50,14 +50,15 @@ const (
 // /com.test.cch.UserService --> zk client
 var registryClientCache = make(map[string]dubboreg.Registry, 3)
 
-func getRegistry() (dubboreg.Registry, error) {
+func getRegistry(role int) (dubboreg.Registry, error) {
 	var (
 		reg dubboreg.Registry
 		ok  bool
 		err error
 	)
 
-	reg, ok = registryClientCache[registryCacheKey]
+	cacheKey := fmt.Sprintf("%s#%d", registryCacheKey, role)
+	reg, ok = registryClientCache[cacheKey]
 	if ok {
 		return reg, nil
 	}
@@ -65,7 +66,7 @@ func getRegistry() (dubboreg.Registry, error) {
 	registrylock.Lock()
 	defer registrylock.Unlock()
 
-	reg, ok = registryClientCache[registryCacheKey]
+	reg, ok = registryClientCache[cacheKey]
 	if ok {
 		return reg, nil
 	}
@@ -81,7 +82,7 @@ func getRegistry() (dubboreg.Registry, error) {
 		dubbocommon.WithParams(url.Values{
 			dubboconsts.REGISTRY_KEY:         []string{zookeeper},
 			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZookeeperTimeout()},
-			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(dubbocommon.PROVIDER)},
+			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(role)},
 		}),
 		dubbocommon.WithLocation(addrStr),
 	)
@@ -89,7 +90,7 @@ func getRegistry() (dubboreg.Registry, error) {
 	reg, err = zkreg.NewZkRegistry(&registryURL)
 	// store registry object to global cache
 	if err == nil {
-		registryClientCache[registryCacheKey] = reg
+		registryClientCache[cacheKey] = reg
 	}
 	return reg, err
 }

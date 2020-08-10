@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/symcn/registry/dubbo/common"
 	"mosn.io/mosn/pkg/log"
 )
 
@@ -20,7 +21,7 @@ func init() {
 }
 
 func heartbeat(w http.ResponseWriter, r *http.Request) {
-	reg, err := getRegistry()
+	reg, err := getRegistry(common.PROVIDER)
 	if err != nil {
 		response(w, resp{Errno: fail, ErrMsg: err.Error()})
 		return

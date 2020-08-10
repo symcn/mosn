@@ -23,6 +23,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/symcn/registry/dubbo/common"
 	dubbocommon "github.com/symcn/registry/dubbo/common"
 	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
 	"mosn.io/mosn/pkg/log"
@@ -128,7 +129,7 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 }
 
 func doSubUnsub(req subReq, sub bool) error {
-	reg, err := getRegistry()
+	reg, err := getRegistry(common.CONSUMER)
 	if err != nil {
 		return err
 	}
