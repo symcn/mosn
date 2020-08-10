@@ -48,6 +48,8 @@ const (
 	ContextKeyDownStreamHeaders
 	ContextKeyDownStreamRespHeaders
 	ContextKeyStreamFilterPhase
+	ContextKeyService
+	ContextKeyMethod
 	ContextKeyEnd
 )
 

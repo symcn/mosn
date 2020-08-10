@@ -30,6 +30,7 @@ import (
 	_ "mosn.io/mosn/pkg/filter/network/proxy"
 	_ "mosn.io/mosn/pkg/filter/network/streamproxy"
 	_ "mosn.io/mosn/pkg/filter/stream/dsl"
+	_ "mosn.io/mosn/pkg/filter/stream/dubbo"
 	_ "mosn.io/mosn/pkg/filter/stream/faultinject"
 	_ "mosn.io/mosn/pkg/filter/stream/faulttolerance"
 	_ "mosn.io/mosn/pkg/filter/stream/flowcontrol"
@@ -60,7 +61,9 @@ import (
 	_ "mosn.io/mosn/pkg/trace/sofa/xprotocol"
 	_ "mosn.io/mosn/pkg/trace/sofa/xprotocol/bolt"
 	_ "mosn.io/mosn/pkg/upstream/healthcheck"
-	_ "mosn.io/mosn/pkg/upstream/servicediscovery/dubbod"
+	_ "mosn.io/mosn/pkg/upstream/httpregistry/dubbod"
+
+	// _ "mosn.io/mosn/pkg/upstream/servicediscovery/dubbod"
 	_ "mosn.io/mosn/pkg/xds"
 )
 

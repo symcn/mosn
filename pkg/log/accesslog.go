@@ -20,6 +20,8 @@ package log
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 
 	"mosn.io/api"
 	"mosn.io/mosn/pkg/types"
@@ -66,15 +68,15 @@ type accesslog struct {
 }
 
 type logEntry struct {
-	text string
-	name string
+	text     string
+	variable variable.Variable
 }
 
 func (le *logEntry) log(ctx context.Context, buf buffer.IoBuffer) {
 	if le.text != "" {
 		buf.WriteString(le.text)
 	} else {
-		value, err := variable.GetVariableValue(ctx, le.name)
+		value, err := variable.GetVariableValue(ctx, le.variable.Name())
 		if err != nil {
 			buf.WriteString(variable.ValueNotFound)
 		} else {
@@ -152,11 +154,14 @@ func parseFormat(format string) ([]*logEntry, error) {
 					}
 
 					// var def ends, add variable
-					_, err := variable.AddVariable(format[lastMark+1 : pos])
+					varName := format[lastMark+1 : pos]
+					varEntry, err := variable.AddVariable(strings.ToLower(varName))
 					if err != nil {
-						return nil, err
+						// if not match, use raw string
+						entries = append(entries, &logEntry{text: fmt.Sprintf("%%%s%%", varName)})
+					} else {
+						entries = append(entries, &logEntry{variable: varEntry})
 					}
-					entries = append(entries, &logEntry{name: format[lastMark+1 : pos]})
 				} else {
 					// ignore empty text
 					if pos > lastMark+1 {
