@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/mosn/binding"
 	dubboreg "github.com/symcn/registry/dubbo"
@@ -45,6 +46,9 @@ var (
 const (
 	succ = iota
 	fail
+
+	podGroupKey   = "sym-group"
+	dubboGroupKey = "flag"
 )
 
 // /com.test.cch.UserService --> zk client
@@ -88,9 +92,17 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 	)
 	// init registry
 	reg, err = zkreg.NewZkRegistry(&registryURL)
+	if err != nil {
+		return nil, err
+	}
 	// store registry object to global cache
-	if err == nil {
-		registryClientCache[cacheKey] = reg
+	registryClientCache[cacheKey] = reg
+
+	// wait connected
+	for i := 0; i < 5; i++ {
+		if !reg.ConnectState() {
+			time.Sleep(time.Millisecond * 10)
+		}
 	}
 	return reg, err
 }

@@ -12,6 +12,7 @@ import (
 var (
 	hb            chan struct{}
 	lastHeartBeat int64
+	maxLogTime    int64 = 100
 )
 
 func init() {
@@ -35,7 +36,6 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO check some status
 	select {
 	case hb <- struct{}{}:
 	case <-time.After(time.Millisecond * 50):
@@ -47,15 +47,22 @@ func heartbeat(w http.ResponseWriter, r *http.Request) {
 }
 
 func loopCheckHeartbeat() {
-	t := time.NewTicker(GetHeartExpireTime())
+	t := time.NewTicker(time.Second * 1)
 	defer t.Stop()
 	for {
 		select {
 		case <-t.C:
-			if time.Now().UnixNano()-atomic.LoadInt64(&lastHeartBeat) >= GetHeartExpireTime().Nanoseconds() {
+			expireSecond := time.Now().UnixNano() - atomic.LoadInt64(&lastHeartBeat)
+			if expireSecond < GetHeartExpireTime().Nanoseconds() {
+				continue
+			}
+
+			go unPublishAll()
+			go unSubAll()
+
+			// after maxLogTime(100s) don't print log
+			if expireSecond/time.Second.Nanoseconds() <= maxLogTime {
 				log.DefaultLogger.Infof("heartbeat expire %d s, unPublish unSub all service", (time.Now().UnixNano()-atomic.LoadInt64(&lastHeartBeat))/(time.Second.Nanoseconds()))
-				go unPublishAll()
-				go unSubAll()
 			}
 		}
 	}
@@ -65,7 +72,7 @@ func autoUnPub() {
 	for {
 		select {
 		case <-hb:
-			log.DefaultLogger.Debugf("heartbeat.")
+			log.DefaultLogger.Debugf("heartbeat ack succ.")
 			atomic.StoreInt64(&lastHeartBeat, time.Now().UnixNano())
 		}
 	}

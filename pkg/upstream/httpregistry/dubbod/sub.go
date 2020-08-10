@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -67,8 +68,8 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 
 	for k, v := range types.GetPodLabels() {
 		// ! import: should check need rewrite
-		if k == "sym-group" {
-			k = "flag"
+		if strings.EqualFold(k, podGroupKey) {
+			k = dubboGroupKey
 		}
 
 		// avoid recover params
