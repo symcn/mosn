@@ -18,9 +18,11 @@ package dubbod
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	dubbologger "github.com/symcn/registry/dubbo/common/logger"
+	"mosn.io/mosn/pkg/admin/store"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/pkg/utils"
 )
@@ -39,6 +41,11 @@ func Init() {
 	_ = dubbologger.InitLog("./dubbogo.log")
 
 	utils.GoWithRecover(func() {
+		for store.GetMosnState() != store.Running {
+			log.DefaultLogger.Infof("wait mosn status(%d) running", store.GetMosnState())
+			time.Sleep(time.Second * 1)
+		}
+
 		if err := http.ListenAndServe(GetHttpAddr(), r); err != nil {
 			log.DefaultLogger.Infof("auto write config when updated")
 		}
