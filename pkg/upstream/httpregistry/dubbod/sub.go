@@ -67,7 +67,6 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for k, v := range types.GetPodLabels() {
-		// ! import: should check need rewrite
 		if strings.EqualFold(k, podGroupKey) {
 			k = dubboGroupKey
 		}
@@ -76,15 +75,18 @@ func subscribe(w http.ResponseWriter, r *http.Request) {
 
 	err = doSubUnsub(req, true)
 	if err != nil {
-		response(w, resp{Errno: fail, ErrMsg: "subscribe fail, err: " + err.Error()})
-		return
+		log.DefaultLogger.Errorf("subscribe error:%+v", err)
+		if !strings.Contains(err.Error(), zkNodeHasBeenRegisteredErr) {
+			response(w, resp{Errno: fail, ErrMsg: "subscribe fail, err: " + err.Error()})
+			return
+		}
 	}
 
 	alreadySub[req.Service.Interface] = req
 
 	select {
 	case hb <- struct{}{}:
-	case <-time.After(time.Millisecond * 50):
+	case <-time.After(sendHBTimeout):
 	}
 
 	response(w, resp{Errno: succ, ErrMsg: "subscribe success", SubInterfaceList: getSubInterfaceList()})
@@ -111,15 +113,17 @@ func unsubscribe(w http.ResponseWriter, r *http.Request) {
 	err = doSubUnsub(storeReq, false)
 	if err != nil {
 		log.DefaultLogger.Errorf("unsubscribe error:%+v", err)
-		response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})
-		return
+		if !strings.Contains(err.Error(), zkNodeHasNotRegisteredErr) {
+			response(w, resp{Errno: fail, ErrMsg: "unsubscribe fail, err: " + err.Error()})
+			return
+		}
 	}
 
 	delete(alreadySub, req.Service.Interface)
 
 	select {
 	case hb <- struct{}{}:
-	case <-time.After(time.Millisecond * 50):
+	case <-time.After(sendHBTimeout):
 	}
 
 	response(w, resp{Errno: succ, ErrMsg: "unsubscribe success", SubInterfaceList: getSubInterfaceList()})
@@ -170,22 +174,21 @@ func doSubUnsub(req subReq, sub bool) error {
 	return nil
 }
 
-func unSubAll() (notUnsub []string) {
+func unSubAll() {
 	if len(alreadySub) == 0 {
-		return nil
+		return
 	}
 
-	notUnsub = make([]string, 0, len(alreadySub))
 	subl.Lock()
 	defer subl.Unlock()
+
 	for _, req := range alreadySub {
 		if e := doSubUnsub(req, false); e != nil {
 			log.DefaultLogger.Errorf("can not unsubscribe service {%s} err:%+v", req.Service.Interface, e.Error())
-			notUnsub = append(notUnsub, req.Service.Interface)
 		} else {
 			log.DefaultLogger.Infof("unsubscribe service {%s} succ", req.Service.Interface)
 		}
 	}
 	alreadySub = make(map[string]subReq)
-	return notUnsub
+	return
 }

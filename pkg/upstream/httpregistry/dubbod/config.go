@@ -26,6 +26,10 @@ var (
 	heartBeatExpire             = 15
 	mosnHeartBeatExpireKey      = "MOSN_HEART_EXPIRE"
 
+	// Path{dubbo://:@10.12.214.61:20882/?interface=abc\u0026group=\u0026version=} has been registered
+	zkNodeHasBeenRegisteredErr = "has been registered"
+	zkNodeHasNotRegisteredErr  = "has not registered"
+
 	// if is center, mosn will use request host and port
 	// if not use request host and MOSN_EXPORT_PORT
 	isCenterKey = "MOSN_CENTER_MODE"

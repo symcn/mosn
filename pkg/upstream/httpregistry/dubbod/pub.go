@@ -77,14 +77,16 @@ func publish(w http.ResponseWriter, r *http.Request) {
 	err = doPubUnPub(req, true)
 	if err != nil {
 		log.DefaultLogger.Errorf("publish error:%+v", err)
-		response(w, resp{Errno: fail, ErrMsg: "publish fail, err: " + err.Error()})
-		return
+		if !strings.Contains(err.Error(), zkNodeHasBeenRegisteredErr) {
+			response(w, resp{Errno: fail, ErrMsg: "publish fail, err: " + err.Error()})
+			return
+		}
 	}
 	alreadyPublish[req.Service.Interface] = req
 
 	select {
 	case hb <- struct{}{}:
-	case <-time.After(time.Millisecond * 50):
+	case <-time.After(sendHBTimeout):
 	}
 
 	response(w, resp{Errno: succ, ErrMsg: "publish success", PubInterfaceList: getPubInterfaceList()})
@@ -112,14 +114,16 @@ func unpublish(w http.ResponseWriter, r *http.Request) {
 	err = doPubUnPub(storeReq, false)
 	if err != nil {
 		log.DefaultLogger.Errorf("unpublish error:%+v", err)
-		response(w, resp{Errno: fail, ErrMsg: "unpub fail, err: " + err.Error()})
-		return
+		if !strings.Contains(err.Error(), zkNodeHasNotRegisteredErr) {
+			response(w, resp{Errno: fail, ErrMsg: "unpub fail, err: " + err.Error()})
+			return
+		}
 	}
 	delete(alreadyPublish, storeReq.Service.Interface)
 
 	select {
 	case hb <- struct{}{}:
-	case <-time.After(time.Millisecond * 50):
+	case <-time.After(sendHBTimeout):
 	}
 
 	response(w, resp{Errno: succ, ErrMsg: "unpub success", PubInterfaceList: getPubInterfaceList()})
@@ -168,25 +172,23 @@ func doPubUnPub(req pubReq, pub bool) error {
 
 	// unpublish this service
 	return reg.UnRegister(&dubboURL)
-
 }
 
-func unPublishAll() (notUnpub []string) {
+func unPublishAll() {
 	if len(alreadyPublish) == 0 {
-		return nil
+		return
 	}
 
-	notUnpub = make([]string, 0, len(alreadyPublish))
 	publ.Lock()
 	defer publ.Unlock()
+
 	for _, req := range alreadyPublish {
 		if e := doPubUnPub(req, false); e != nil {
 			log.DefaultLogger.Errorf("can not unpublish service {%s} err:%+v", req.Service.Interface, e.Error())
-			notUnpub = append(notUnpub, req.Service.Interface)
 		} else {
 			log.DefaultLogger.Infof("unpublish service {%s} succ", req.Service.Interface)
 		}
 	}
 	alreadyPublish = make(map[string]pubReq)
-	return notUnpub
+	return
 }
