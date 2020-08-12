@@ -136,5 +136,5 @@ shell:
 .PHONY: unit-test build image rpm upload shell
 
 proxy2:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./build/mosn -ldflags "-X mosn.io/mosn/pkg/types.IstioVersion=1.6.7" ./cmd/mosn/main
-	docker build -t symcn.tencentcloudcr.com/symcn/proxyv2:1.6.7 -f ./build/Dockerfile .
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./build/mosn -ldflags "-X mosn.io/mosn/pkg/types.IstioVersion=1.6.8" ./cmd/mosn/main
+	docker build -t symcn.tencentcloudcr.com/symcn/proxyv2:1.6.8 -f ./build/Dockerfile .

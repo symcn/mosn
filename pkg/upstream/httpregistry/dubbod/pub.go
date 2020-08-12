@@ -71,11 +71,7 @@ func publish(w http.ResponseWriter, r *http.Request) {
 		if strings.EqualFold(k, podGroupKey) {
 			k = dubboGroupKey
 		}
-
-		// avoid recover params
-		if _, ok := req.Service.Params[k]; !ok {
-			req.Service.Params[k] = v
-		}
+		req.Service.Params[k] = v
 	}
 
 	err = doPubUnPub(req, true)

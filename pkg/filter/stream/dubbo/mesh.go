@@ -56,9 +56,7 @@ func (d *dubboFilter) OnReceive(ctx context.Context, headers api.HeaderMap, buf 
 	}
 
 	for k, v := range types.GetPodLabels() {
-		if _, ok = headers.Get(k); !ok {
-			headers.Set(k, v)
-		}
+		headers.Set(k, v)
 	}
 
 	ctx = mosnctx.WithValue(ctx, types.ContextKeyService, service)
