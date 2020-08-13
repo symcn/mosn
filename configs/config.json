@@ -1,0 +1,146 @@
+{
+	"servers": [
+		{
+			"default_log_path": "stdout",
+			"default_log_level": "DEBUG",
+			"listeners": [
+				{
+					"name": "egress_dubbo",
+					"address": "0.0.0.0:20881",
+					"bind_port": true,
+					"log_path": "stdout",
+					"access_logs": [
+						{
+							"log_path": "stdout",
+							"log_format": "------>[%start_time%] %request_received_duration% %response_received_duration% %bytes_sent% %bytes_received% %protocol% %response_code% %duration% %response_flag% %response_code% %upstream_local_address% %downstream_local_address% %downstream_remote_address% %upstream_host% %upstream_transport_failure_reason% %upstream_cluster%"
+						}
+					],
+					"filter_chains": [
+						{
+							"tls_context": {},
+							"filters": [
+								{
+									"type": "proxy",
+									"config": {
+										"downstream_protocol": "X",
+										"upstream_protocol": "X",
+										"router_config_name": "20882",
+										"extend_config": {
+											"sub_protocol": "dubbo"
+										}
+									}
+								}
+							]
+						}
+					],
+					"stream_filters": [
+						{
+							"type": "dubbo_stream",
+							"config": {}
+						}
+					]
+				}
+			],
+			"routers": [
+				{
+					"router_config_name": "20882",
+					"virtual_hosts": [
+						{
+							"name": "benchmark",
+							"domains": [
+								"*"
+							],
+							"routers": [
+								{
+									"match": {
+										"prefix": "/"
+									},
+									"route": {
+										"cluster_name": "outbound|20882||mosn.io.dubbo.DemoService",
+										"timeout": "3s",
+										"retry_policy": {
+											"retry_on": true,
+											"retry_timeout": "3s",
+											"num_retries": 2
+										}
+									}
+								},
+								{
+									"match": {
+										"prefix": "/",
+										"headers": [
+											{
+												"name": "sym-group",
+												"value": "blue"
+											}
+										]
+									},
+									"route": {
+										"weighted_clusters": [
+											{
+												"name": "outbound|20882|blue|mosn.io.dubbo.DemoService",
+												"weight": 50
+											},
+											{
+												"name": "outbound|20882|green|mosn.io.dubbo.DemoService",
+												"weight": 50
+											}
+										],
+										"timeout": "3s",
+										"retry_policy": {
+											"retry_on": true,
+											"retry_timeout": "3s",
+											"num_retries": 2
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"cluster_manager": {
+		"clusters": [
+			{
+				"Name": "outbound|20882||mosn.io.dubbo.DemoService",
+				"type": "SIMPLE",
+				"lb_type": "LB_RANDOM",
+				"max_request_per_conn": 1024,
+				"conn_buffer_limit_bytes": 32768,
+				"hosts": [
+					{
+						"address": "127.0.0.1:20880"
+					}
+				]
+			}
+		]
+	},
+	"admin": {
+		"address": {
+			"socket_address": {
+				"address": "0.0.0.0",
+				"port_value": 34901
+			}
+		}
+	},
+	"metrics": {
+		"sinks": [
+			{
+				"type": "prometheus",
+				"config": {
+					"port": 15090,
+					"endpoint": "/stats/prometheus",
+					"percentiles": [
+						50,
+						90,
+						95,
+						96,
+						99
+					]
+				}
+			}
+		]
+	}
+}
