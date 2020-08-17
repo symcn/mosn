@@ -1,7 +1,6 @@
 package dubbo
 
 import (
-	"strings"
 	"sync"
 
 	gometrics "github.com/rcrowley/go-metrics"
@@ -30,8 +29,7 @@ type Stats struct {
 }
 
 func GetStatus(listener, service, method string) *Stats {
-	ss := []string{service, method}
-	key := strings.Join(ss, "-")
+	key := service + "-" + method
 	if s, ok := statsFactory[key]; ok {
 		return s
 	}
