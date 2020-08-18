@@ -55,6 +55,7 @@ func autoUnPub() {
 		select {
 		case <-hb:
 			timer.Reset(expireTime)
+			log.DefaultLogger.Debugf("heartbeat ack succ.")
 		}
 	}
 }
