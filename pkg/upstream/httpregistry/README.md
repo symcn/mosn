@@ -1,12 +1,10 @@
 # HttpRegistry
 
-_所有的成功请求都会返回当前已经注册的服务的名称 `interface_list`，具体的`$host` `$port`按照实际情况填写_
-
-## provider 注册
+## 服务注册信息同步
 
 ### route
 
-`$host:$port/pub`
+`$host:$port/registry/info/sync`
 
 ### method
 
@@ -15,64 +13,19 @@ _所有的成功请求都会返回当前已经注册的服务的名称 `interfac
 ### request struct
 
 ```golang
-Service struct {
-		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
-		Params    map[string]interface{} `json:"params"`
-	} `json:"service"`
-```
-
-### example
-
-- request
-
-```json
-{
-  "service": {
-    "interface": "com.test.cc",
-    "methods": [""]
-  }
+type ServiceRegistrySnap struct {
+	ProviderList []ServiceRegistryInfo `json:"provider_list"`
+	ConsumerList []ServiceRegistryInfo `json:"consumer_list"`
 }
-```
 
-- succ
-
-```json
-{
-  "code": 0,
-  "msg": "publish success",
-  "interface_list": ["com.test.cc", "com.test.cc1"]
-}
-```
-
-- fail
-
-```json
-{
-  "code": 1,
-  "msg": "publish fail, err: Path{dubbo://:@10.12.214.61:20882/?interface=com.test.cc1&group=blue&version=} has been registered"
-}
-```
-
-## provider 取消注册
-
-### route
-
-`$host:$port/unpub`
-
-### method
-
-`POST`
-
-### request struct
-
-```golang
-type pubReq struct {
+type ServiceRegistryInfo struct {
 	Service struct {
 		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
+		Methods   []string               `json:"methods"`                      // eg. GetUser,GetProfile,UpdateName
 		Params    map[string]interface{} `json:"params"`
 	} `json:"service"`
+	Host string `json:"host,omitempty"`
+	Port int    `json:"port,omitempty"`
 }
 ```
 
@@ -82,167 +35,75 @@ type pubReq struct {
 
 ```json
 {
-  "service": {
-    "interface": "com.test.cc1",
-    "methods": [""]
-  }
+    "provider_list": [
+        {
+            "service": {
+                "interface": "a",
+                "methods": [
+                    "a",
+                    "b",
+                    "c"
+                ]
+            },
+            "host": "1.2.3.4",
+            "port": 8080
+        },
+        {
+            "service": {
+                "interface": "b",
+                "methods": [
+                    "a",
+                    "b",
+                    "c"
+                ]
+            },
+            "host": "1.2.3.4",
+            "port": 8080
+        }
+    ],
+    "consumer_list": [
+        {
+            "service": {
+                "interface": "c",
+                "methods": [
+                    "a",
+                    "b",
+                    "c"
+                ]
+            },
+            "host": "1.2.3.4",
+            "port": 8080
+        },
+        {
+            "service": {
+                "interface": "d",
+                "methods": [
+                    "a",
+                    "b",
+                    "c"
+                ]
+            },
+            "host": "1.2.3.4",
+            "port": 8080
+        }
+    ]
 }
 ```
 
 - succ
 
 ```json
-{
-  "code": 0,
-  "msg": "unpub success",
-  "interface_list": ["com.test.cc2", "com.test.cc"]
-}
+{"code":0,"msg":"registry service success","service_list":{"pub_interface_list":["a","b"],"sub_interface_list":["d","c"],"version":3}}
 ```
 
 - fail
 
 ```json
-{
-  "code": 1,
-  "msg": "unpub fail, err: Path{dubbo://:@10.12.214.61:20882/?interface=com.test.cc&group=blue&version=} has not registered"
-}
-```
-
-## consumer 注册
-
-### route
-
-`$host:$port/sub`
-
-### method
-
-`POST`
-
-### request struct
-
-```golang
-Service struct {
-		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
-		Params    map[string]interface{} `json:"params"`
-	} `json:"service"`
-```
-
-### example
-
-- request
-
-```json
-{
-  "service": {
-    "interface": "com.test.cc",
-    "methods": [""]
-  }
-}
-```
-
-- succ
-
-```json
-{
-  "code": 0,
-  "msg": "subscribe success"
-}
-```
-
-- fail
-
-```json
-{
-  "code": 1,
-  "msg": "publish fail, err: Path{dubbo://:@10.12.214.61:20882/?interface=com.test.cc1&group=blue&version=} has been registered"
-}
-```
-
-## consumer 取消注册
-
-### route
-
-`$host:$port/unsub`
-
-### method
-
-`POST`
-
-### request struct
-
-```golang
-type pubReq struct {
-	Service struct {
-		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string               `json:"methods" binding:"required"`   // eg. GetUser,GetProfile,UpdateName
-		Params    map[string]interface{} `json:"params"`
-	} `json:"service"`
-}
-```
-
-### example
-
-- request
-
-```json
-{
-  "service": {
-    "interface": "com.test.cc1",
-    "methods": [""]
-  }
-}
-```
-
-- succ
-
-```json
-{
-  "code": 0,
-  "msg": "unsubscribe success"
-}
-```
-
-- fail
-
-```json
-{
-  "code": 1,
-  "msg": "unpub fail, err: Path{dubbo://:@10.12.214.61:20882/?interface=com.test.cc&group=blue&version=} has not registered"
-}
-```
-
-## 心跳
-
-### route
-
-`$host:$port/heartbeat`
-
-### method
-
-`GET`
-
-### example
-
-- succ
-
-```json
-{
-  "code": 0,
-  "msg": "ack success",
-  "interface_list": ["com.test.cc2", "com.test.cc"]
-}
-```
-
-- fail
-
-```json
-{
-  "code": 1,
-  "msg": "ack fail timeout"
-}
+{"code":1,"msg":"zk not connected.","service_list":{"version":0}}
 ```
 
 ## 说明
 
 response 返回的结果 0 表示成功， 1 表示失败。如果返回 0 都会有已经注册的服务列表，用于 SDK 逻辑判断
+
+**version 每次修改都会自增**
