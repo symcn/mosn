@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"strings"
 	"sync/atomic"
+	"time"
 
+	"github.com/symcn/registry/dubbo/common"
 	"mosn.io/mosn/pkg/log"
 )
 
@@ -104,6 +106,11 @@ func registryReq(req *ServiceRegistrySnap) {
 }
 
 func loopReceiveEvent() {
+
+	var (
+		succ bool
+	)
+
 	for {
 		select {
 		case evt, ok := <-eventQueue:
@@ -112,17 +119,31 @@ func loopReceiveEvent() {
 			}
 			log.DefaultLogger.Infof("%s %s service {%s}", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface)
 
-			var succ bool
+			for {
+				reg, err := getRegistry(common.PROVIDER)
+				if err != nil || !checkZkConnect(reg) {
+					log.DefaultLogger.Warnf("zk connect failed: status(%t), err:%+v", reg.ConnectState(), err)
+					time.Sleep(time.Second * 1)
+					continue
+				}
+				break
+			}
+
+			if evt.Version != snapVersion {
+				continue
+			}
 
 			err := eventHandler(evt)
 			if err == nil {
 				succ = true
 			} else if evt.Operat == OpRegistry && strings.Contains(err.Error(), zkNodeHasBeenRegisteredErr) {
+				log.DefaultLogger.Infof("%s %s service {%s} failed: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
 				succ = true
 			} else if evt.Operat == OpUnRegistry && strings.Contains(err.Error(), zkNodeHasNotRegisteredErr) {
+				log.DefaultLogger.Infof("%s %s service {%s} failed: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
 				succ = true
 			} else {
-				log.DefaultLogger.Errorf("%s %s service {%s} failed: %+v, err:%+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, evt, err)
+				log.DefaultLogger.Errorf("%s %s service {%s} failed: %+v, err: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, evt, err)
 			}
 
 			if succ {
@@ -151,6 +172,7 @@ func loopReceiveEvent() {
 			}
 
 			// exec fail, judge need re-entry
+			time.Sleep(GetZkInterval())
 			afterEventHandler(evt)
 		}
 	}
@@ -222,6 +244,6 @@ func afterEventHandler(evt event) {
 		}
 
 	default:
-		log.DefaultLogger.Errorf("[afterEventHandler] not define operat:", evt.Operat)
+		log.DefaultLogger.Errorf("[afterEventHandler] not define operat:%s", evt.Operat)
 	}
 }

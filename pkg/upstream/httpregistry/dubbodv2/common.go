@@ -52,7 +52,7 @@ const (
 )
 
 // /com.test.cch.UserService --> zk client
-var registryClientCache = make(map[string]dubboreg.Registry, 3)
+var registryClientCache = make(map[string]dubboreg.Registry, 2)
 
 func getRegistry(role int) (dubboreg.Registry, error) {
 	var (
@@ -104,7 +104,23 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 			time.Sleep(time.Millisecond * 10)
 		}
 	}
+	// first connect should check
+	go autoCheckSchedul(reg)
 	return reg, err
+}
+
+func checkZkConnect(reg dubboreg.Registry) bool {
+	if reg == nil {
+		return false
+	}
+
+	if reg.ConnectState() {
+		return true
+	}
+
+	// not connect should auto check
+	go autoCheckSchedul(reg)
+	return false
 }
 
 func response(w http.ResponseWriter, respBody interface{}) {

@@ -25,6 +25,12 @@ var (
 	mosnExportDubboPort         = "MOSN_EXPORT_PORT"
 	heartBeatExpire             = 15
 	mosnHeartBeatExpireKey      = "MOSN_HEART_EXPIRE"
+	zkOperatorInterval          = 1
+	zkOperatorIntervalKey       = "MOSN_ZK_OPERATOR_INTERVAL"
+	autoCheckNum                = 10
+	autoCheckNumKey             = "AUTO_CHECK_REGISTRY_INFO"
+	autoCheckInterval           = 60
+	autoCheckIntervalKey        = "AUTO_CHECK_INTERVAL"
 
 	// Path{dubbo://:@10.12.214.61:20882/?interface=abc\u0026group=\u0026version=} has been registered
 	zkNodeHasBeenRegisteredErr = "has been registered"
@@ -33,6 +39,8 @@ var (
 	// if is center, mosn will use request host and port
 	// if not use request host and MOSN_EXPORT_PORT
 	isCenterKey = "MOSN_CENTER_MODE"
+
+	zkConnErr = fmt.Errorf("zk not connected")
 )
 
 func GetHttpAddr() string {
@@ -59,8 +67,7 @@ func GetZookeeperTimeout() string {
 func GetExportDubboPort() int {
 	port, err := strconv.Atoi(getEnv(mosnExportDubboPort, fmt.Sprintf("%d", defaultExportPort)))
 	if err != nil {
-		log.DefaultLogger.Fatalf("can not parse export port from env", err.Error())
-		return -1
+		return defaultExportPort
 	}
 	return port
 }
@@ -69,6 +76,34 @@ func GetHeartExpireTime() time.Duration {
 	et, err := strconv.Atoi(getEnv(mosnHeartBeatExpireKey, fmt.Sprintf("%d", heartBeatExpire)))
 	if err != nil || et < 1 {
 		return time.Second * time.Duration(heartBeatExpire)
+	}
+	return time.Second * time.Duration(et)
+}
+
+func GetZkInterval() time.Duration {
+	et, err := strconv.Atoi(getEnv(zkOperatorIntervalKey, fmt.Sprintf("%d", zkOperatorInterval)))
+	if err != nil || et < 1 {
+		return time.Second * time.Duration(zkOperatorInterval)
+	}
+	return time.Second * time.Duration(et)
+}
+
+// GetAutoCheckNum auto check num
+// >0 check limit n
+// =0 no check
+// <0 check with not limit
+func GetAutoCheckNum() int {
+	acn, err := strconv.Atoi(getEnv(autoCheckNumKey, fmt.Sprintf("%d", autoCheckNum)))
+	if err != nil {
+		return autoCheckNum
+	}
+	return acn
+}
+
+func GetAutoCheckInterval() time.Duration {
+	et, err := strconv.Atoi(getEnv(autoCheckIntervalKey, fmt.Sprintf("%d", autoCheckInterval)))
+	if err != nil || et < 1 {
+		return time.Second * time.Duration(autoCheckInterval)
 	}
 	return time.Second * time.Duration(et)
 }

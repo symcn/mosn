@@ -35,7 +35,7 @@ require (
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/stretchr/testify v1.6.1
-	github.com/symcn/registry v0.0.0-20200807093229-9f78aeeb3884
+	github.com/symcn/registry v0.0.0-20200819024125-9b0369e6b59b
 	github.com/tjfoc/gmsm v0.0.0-20190220013605-bfb01827afcb // indirect
 	github.com/trainyao/go-maglev v0.0.0-20200611125015-4c1ae64d96a8
 	github.com/urfave/cli v1.20.0
@@ -50,6 +50,7 @@ require (
 	google.golang.org/grpc v1.28.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	istio.io/api v0.0.0-20200227213531-891bf31f3c32
+	k8s.io/apimachinery v0.17.0
 	k8s.io/klog v1.0.0
 	mosn.io/api v0.0.0-20200729124336-c71e8f2074cb
 	mosn.io/pkg v0.0.0-20200729115159-2bd74f20be0f

@@ -24,13 +24,15 @@ type ServiceRegistrySnap struct {
 }
 
 type ServiceRegistryInfo struct {
-	Service struct {
-		Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
-		Methods   []string               `json:"methods"`                      // eg. GetUser,GetProfile,UpdateName
-		Params    map[string]interface{} `json:"params"`
-	} `json:"service"`
-	Host string `json:"host,omitempty"`
-	Port int    `json:"port,omitempty"`
+	Service Service `json:"service"`
+	Host    string  `json:"host,omitempty"`
+	Port    int     `json:"port,omitempty"`
+}
+
+type Service struct {
+	Interface string                 `json:"interface" binding:"required"` // eg. com.mosn.service.DemoService
+	Methods   []string               `json:"methods"`                      // eg. GetUser,GetProfile,UpdateName
+	Params    map[string]interface{} `json:"params"`
 }
 
 // response struct for all requests

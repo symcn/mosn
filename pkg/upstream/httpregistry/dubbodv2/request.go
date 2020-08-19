@@ -57,12 +57,8 @@ func registryInfoSync(w http.ResponseWriter, r *http.Request) {
 		response(w, ResponseInfo{Errno: fail, ErrMsg: err.Error()})
 		return
 	}
-	if reg == nil {
-		response(w, ResponseInfo{Errno: fail, ErrMsg: "zk cache error"})
-		return
-	}
-	if !reg.ConnectState() {
-		response(w, ResponseInfo{Errno: fail, ErrMsg: "zk not connected."})
+	if !checkZkConnect(reg) {
+		response(w, ResponseInfo{Errno: fail, ErrMsg: zkConnErr.Error()})
 		return
 	}
 
@@ -89,8 +85,8 @@ func doPubUnPub(req ServiceRegistryInfo, pub bool) error {
 	if err != nil {
 		return err
 	}
-	if reg == nil {
-		return fmt.Errorf("zk cache error")
+	if !checkZkConnect(reg) {
+		return zkConnErr
 	}
 
 	executeMap := map[string]interface{}{
@@ -132,8 +128,8 @@ func doSubUnsub(req ServiceRegistryInfo, sub bool) error {
 	if err != nil {
 		return err
 	}
-	if reg == nil {
-		return fmt.Errorf("zk cache error")
+	if !checkZkConnect(reg) {
+		return zkConnErr
 	}
 
 	vals := url.Values{
