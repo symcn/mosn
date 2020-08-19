@@ -32,15 +32,14 @@ var (
 	autoCheckInterval           = 60
 	autoCheckIntervalKey        = "AUTO_CHECK_INTERVAL"
 
-	// Path{dubbo://:@10.12.214.61:20882/?interface=abc\u0026group=\u0026version=} has been registered
-	zkNodeHasBeenRegisteredErr = "has been registered"
-	zkNodeHasNotRegisteredErr  = "has not registered"
-
 	// if is center, mosn will use request host and port
 	// if not use request host and MOSN_EXPORT_PORT
 	isCenterKey = "MOSN_CENTER_MODE"
 
-	zkConnErr = fmt.Errorf("zk not connected")
+	// Path{dubbo://:@10.12.214.61:20882/?interface=abc\u0026group=\u0026version=} has been registered
+	zkNodeHasBeenRegisteredErr = "has been registered"
+	zkNodeHasNotRegisteredErr  = "has not registered"
+	zkConnErr                  = fmt.Errorf("zk not connected")
 )
 
 func GetHttpAddr() string {
