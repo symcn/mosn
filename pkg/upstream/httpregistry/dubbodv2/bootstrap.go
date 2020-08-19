@@ -32,6 +32,7 @@ import (
 func Init() {
 	// 1. init router
 	r := chi.NewRouter()
+	r.Get("/registry/info/sync", registryInfoSyncGet)
 	r.Post("/registry/info/sync", registryInfoSync)
 
 	_ = dubbologger.InitLog("./dubbogo.log")

@@ -49,6 +49,10 @@ func getRegistryInterfaceList() ServiceList {
 		Version:          snapVersion,
 	}
 }
+func registryInfoSyncGet(w http.ResponseWriter, r *http.Request) {
+	response(w, ResponseInfo{Errno: succ, ErrMsg: "get service list succ", ServiceList: getRegistryInterfaceList()})
+	return
+}
 
 // publish a service to registry
 func registryInfoSync(w http.ResponseWriter, r *http.Request) {
