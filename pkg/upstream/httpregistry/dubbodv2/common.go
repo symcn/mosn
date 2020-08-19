@@ -109,18 +109,23 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 	return reg, err
 }
 
-func checkZkConnect(reg dubboreg.Registry) bool {
+func getRegistryWithCheck(role int) (dubboreg.Registry, error) {
+	reg, err := getRegistry(role)
+	if err != nil {
+		return nil, err
+	}
+
 	if reg == nil {
-		return false
+		return nil, zkConnErr
 	}
 
 	if reg.ConnectState() {
-		return true
+		return reg, nil
 	}
 
 	// not connect should auto check
 	go autoCheckSchedul(reg)
-	return false
+	return nil, zkConnErr
 }
 
 func response(w http.ResponseWriter, respBody interface{}) {

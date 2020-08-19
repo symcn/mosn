@@ -120,9 +120,9 @@ func loopReceiveEvent() {
 			log.DefaultLogger.Infof("%s %s service {%s}", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface)
 
 			for {
-				reg, err := getRegistry(common.PROVIDER)
-				if err != nil || !checkZkConnect(reg) {
-					log.DefaultLogger.Warnf("zk connect failed: status(%t), err:%+v", reg.ConnectState(), err)
+				_, err := getRegistryWithCheck(common.PROVIDER)
+				if err != nil {
+					log.DefaultLogger.Warnf("zk connect failed: err:%+v", err)
 					time.Sleep(time.Second * 1)
 					continue
 				}

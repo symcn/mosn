@@ -52,13 +52,9 @@ func getRegistryInterfaceList() ServiceList {
 
 // publish a service to registry
 func registryInfoSync(w http.ResponseWriter, r *http.Request) {
-	reg, err := getRegistry(common.PROVIDER)
+	_, err := getRegistryWithCheck(common.PROVIDER)
 	if err != nil {
 		response(w, ResponseInfo{Errno: fail, ErrMsg: err.Error()})
-		return
-	}
-	if !checkZkConnect(reg) {
-		response(w, ResponseInfo{Errno: fail, ErrMsg: zkConnErr.Error()})
 		return
 	}
 
@@ -81,12 +77,9 @@ func registryInfoSync(w http.ResponseWriter, r *http.Request) {
 }
 
 func doPubUnPub(req ServiceRegistryInfo, pub bool) error {
-	reg, err := getRegistry(common.PROVIDER)
+	reg, err := getRegistryWithCheck(common.PROVIDER)
 	if err != nil {
 		return err
-	}
-	if !checkZkConnect(reg) {
-		return zkConnErr
 	}
 
 	executeMap := map[string]interface{}{
@@ -124,12 +117,9 @@ func doPubUnPub(req ServiceRegistryInfo, pub bool) error {
 }
 
 func doSubUnsub(req ServiceRegistryInfo, sub bool) error {
-	reg, err := getRegistry(common.CONSUMER)
+	reg, err := getRegistryWithCheck(common.CONSUMER)
 	if err != nil {
 		return err
-	}
-	if !checkZkConnect(reg) {
-		return zkConnErr
 	}
 
 	vals := url.Values{
