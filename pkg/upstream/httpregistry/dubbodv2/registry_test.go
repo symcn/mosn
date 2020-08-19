@@ -117,7 +117,7 @@ func Test_registryReq(t *testing.T) {
 		args args
 	}{}
 
-	for i := 0; i < 300; i++ {
+	for i := 0; i < 100; i++ {
 		req := generatReqistryReq()
 		tests = append(tests, struct {
 			name string
@@ -134,7 +134,7 @@ func Test_registryReq(t *testing.T) {
 			registryReq(tt.args.req)
 			time.Sleep(time.Second * 1)
 			if !judge(tt.args.req) {
-				time.Sleep(time.Second * 1)
+				time.Sleep(time.Second * 3)
 				if !judge(tt.args.req) {
 					t.Errorf("generat test err:req:%+v, list:%+v", tt.args.req, getRegistryInterfaceList())
 				}

@@ -28,7 +28,7 @@ var (
 	zkOperatorInterval          = 1
 	zkOperatorIntervalKey       = "MOSN_ZK_OPERATOR_INTERVAL"
 	autoCheckNum                = 10
-	autoCheckNumKey             = "AUTO_CHECK_REGISTRY_INFO"
+	autoCheckNumKey             = "AUTO_CHECK_REGISTRY_INFO_NUM"
 	autoCheckInterval           = 60
 	autoCheckIntervalKey        = "AUTO_CHECK_INTERVAL"
 

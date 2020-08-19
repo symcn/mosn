@@ -129,10 +129,6 @@ func loopReceiveEvent() {
 				break
 			}
 
-			if evt.Version != snapVersion {
-				continue
-			}
-
 			err := eventHandler(evt)
 			if err == nil {
 				succ = true
