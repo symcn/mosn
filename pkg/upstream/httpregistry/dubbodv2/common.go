@@ -104,8 +104,6 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 			time.Sleep(time.Millisecond * 10)
 		}
 	}
-	// first connect should check
-	go autoCheckSchedul(reg)
 	return reg, err
 }
 
@@ -123,8 +121,6 @@ func getRegistryWithCheck(role int) (dubboreg.Registry, error) {
 		return reg, nil
 	}
 
-	// not connect should auto check
-	go autoCheckSchedul(reg)
 	return nil, zkConnErr
 }
 
