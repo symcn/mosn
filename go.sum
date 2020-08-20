@@ -42,6 +42,7 @@ github.com/andybalholm/brotli v1.0.0 h1:7UCwP93aiSfvWpapti8g88vVVGp2qqtGyePsSuDa
 github.com/andybalholm/brotli v1.0.0/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
 github.com/antlr/antlr4 v0.0.0-20200503195918-621b933c7a7f h1:0cEys61Sr2hUBEXfNV8eyQP01oZuBgoMeHunebPirK8=
 github.com/antlr/antlr4 v0.0.0-20200503195918-621b933c7a7f/go.mod h1:T7PbCXFs94rrTttyxjbyT5+/1V8T2TYDejxUfHJjw1Y=
+github.com/apache/dubbo-go v0.1.2-0.20200224151332-dd1a3c24d656 h1:BKQM8DoVXv2un3+1/GE/O5JBBAq+zgQuL5yxnMMfaAQ=
 github.com/apache/dubbo-go v0.1.2-0.20200224151332-dd1a3c24d656/go.mod h1:jKjRwql1YysttGXL9UtOoMaQ/alWQ/eVFKBTLq5+B/0=
 github.com/apache/dubbo-go-hessian2 v1.3.1-0.20200111150223-4ce8c8d0d7ac/go.mod h1:VwEnsOMidkM1usya2uPfGpSLO9XUF//WQcWn3y+jFz8=
 github.com/apache/dubbo-go-hessian2 v1.4.1-0.20200516085443-fa6429e4481d h1:6hZzEpUkCqWZwjSf43kH8IftTyeogEZlL5nEPOqNNkk=
@@ -532,6 +533,12 @@ github.com/symcn/registry v0.0.0-20200807093229-9f78aeeb3884 h1:xtIwIBYzr3Ce4u4Z
 github.com/symcn/registry v0.0.0-20200807093229-9f78aeeb3884/go.mod h1:AuJcYkXVAV2DuLguwQK8EY/SRkHezXrjF8SdhF5e3ok=
 github.com/symcn/registry v0.0.0-20200819024125-9b0369e6b59b h1:hmFIL7FU8uHOqug6XcQJPLdZRElfXFY9v7rNyx8Op9s=
 github.com/symcn/registry v0.0.0-20200819024125-9b0369e6b59b/go.mod h1:AuJcYkXVAV2DuLguwQK8EY/SRkHezXrjF8SdhF5e3ok=
+github.com/symcn/registry v0.0.0-20200820101824-32db1ffe81f2 h1:kCPqbMbGAqEl36awm/cJEZH+tyi0tacTuzG/hXbGPwU=
+github.com/symcn/registry v0.0.0-20200820101824-32db1ffe81f2/go.mod h1:AuJcYkXVAV2DuLguwQK8EY/SRkHezXrjF8SdhF5e3ok=
+github.com/symcn/registry v0.0.0-20200820102456-4540b9990dc1 h1:T60AreeHI6usHRlAZSbJTh52b17Tho6zKNZi8OmAo+0=
+github.com/symcn/registry v0.0.0-20200820102456-4540b9990dc1/go.mod h1:AuJcYkXVAV2DuLguwQK8EY/SRkHezXrjF8SdhF5e3ok=
+github.com/symcn/registry v0.0.0-20200820102957-21bf58f7de41 h1:Dr5cp9g/6xmzmtr5o0wSF0qbGtB1LSC25VC0UbDmd10=
+github.com/symcn/registry v0.0.0-20200820102957-21bf58f7de41/go.mod h1:AuJcYkXVAV2DuLguwQK8EY/SRkHezXrjF8SdhF5e3ok=
 github.com/tealeg/xlsx v1.0.5/go.mod h1:btRS8dz54TDnvKNosuAqxrM1QgN1udgk9O34bDCnORM=
 github.com/tebeka/strftime v0.1.3/go.mod h1:7wJm3dZlpr4l/oVK0t1HYIc4rMzQ2XJlOMIUJUJH6XQ=
 github.com/tent/http-link-go v0.0.0-20130702225549-ac974c61c2f9/go.mod h1:RHkNRtSLfOK7qBTHaeSX1D6BNpI3qw7NTxsmNr4RvN8=

@@ -7,6 +7,7 @@ require (
 	github.com/SkyAPM/go2sky v0.5.0
 	github.com/TarsCloud/TarsGo v0.0.0-20190521041003-0022231bc5b2
 	github.com/alibaba/sentinel-golang v0.2.1-0.20200509115140-6d505e23ef30
+	github.com/apache/dubbo-go v0.1.2-0.20200224151332-dd1a3c24d656
 	github.com/apache/dubbo-go-hessian2 v1.4.1-0.20200516085443-fa6429e4481d // perf: https://github.com/apache/dubbo-go-hessian2/pull/188
 	github.com/c2h5oh/datasize v0.0.0-20171227191756-4eba002a5eae
 	github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f
@@ -35,7 +36,7 @@ require (
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/stretchr/testify v1.6.1
-	github.com/symcn/registry v0.0.0-20200819024125-9b0369e6b59b
+	github.com/symcn/registry v0.0.0-20200820102957-21bf58f7de41
 	github.com/tjfoc/gmsm v0.0.0-20190220013605-bfb01827afcb // indirect
 	github.com/trainyao/go-maglev v0.0.0-20200611125015-4c1ae64d96a8
 	github.com/urfave/cli v1.20.0

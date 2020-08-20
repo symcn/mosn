@@ -39,6 +39,42 @@
 							"config": {}
 						}
 					]
+				},
+				{
+					"name": "ingress_dubbo",
+					"address": "0.0.0.0:20882",
+					"bind_port": true,
+					"log_path": "stdout",
+					"access_logs": [
+						{
+							"log_path": "stdout",
+							"log_format": "------>[%start_time%] %request_received_duration% %response_received_duration% %bytes_sent% %bytes_received% %protocol% %response_code% %duration% %response_flag% %response_code% %upstream_local_address% %downstream_local_address% %downstream_remote_address% %upstream_host% %upstream_transport_failure_reason% %upstream_cluster%"
+						}
+					],
+					"filter_chains": [
+						{
+							"tls_context": {},
+							"filters": [
+								{
+									"type": "proxy",
+									"config": {
+										"downstream_protocol": "X",
+										"upstream_protocol": "X",
+										"router_config_name": "provider",
+										"extend_config": {
+											"sub_protocol": "dubbo"
+										}
+									}
+								}
+							]
+						}
+					],
+					"stream_filters": [
+						{
+							"type": "dubbo_stream",
+							"config": {}
+						}
+					]
 				}
 			],
 			"routers": [
@@ -64,28 +100,26 @@
 											"num_retries": 2
 										}
 									}
-								},
+								}
+							]
+						}
+					]
+				},
+				{
+					"router_config_name": "provider",
+					"virtual_hosts": [
+						{
+							"name": "benchmark",
+							"domains": [
+								"*"
+							],
+							"routers": [
 								{
 									"match": {
-										"prefix": "/",
-										"headers": [
-											{
-												"name": "sym-group",
-												"value": "blue"
-											}
-										]
+										"prefix": "/"
 									},
 									"route": {
-										"weighted_clusters": [
-											{
-												"name": "outbound|20882|blue|mosn.io.dubbo.DemoService",
-												"weight": 50
-											},
-											{
-												"name": "outbound|20882|green|mosn.io.dubbo.DemoService",
-												"weight": 50
-											}
-										],
+										"cluster_name": "outbound|20882||mosn.io.dubbo.DemoService",
 										"timeout": "3s",
 										"retry_policy": {
 											"retry_on": true,
@@ -111,7 +145,7 @@
 				"conn_buffer_limit_bytes": 32768,
 				"hosts": [
 					{
-						"address": "127.0.0.1:20880"
+						"address": "10.12.216.66:20880"
 					}
 				]
 			}
