@@ -117,6 +117,7 @@ func loopReceiveEvent() {
 			if !ok {
 				return
 			}
+			succ = false
 			log.DefaultLogger.Infof("%s %s service {%s}", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface)
 
 			for {
@@ -133,10 +134,10 @@ func loopReceiveEvent() {
 			if err == nil {
 				succ = true
 			} else if evt.Operat == OpRegistry && strings.Contains(err.Error(), zkNodeHasBeenRegisteredErr) {
-				log.DefaultLogger.Infof("%s %s service {%s} failed: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
+				log.DefaultLogger.Infof("%s %s service {%s} succ: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
 				succ = true
 			} else if evt.Operat == OpUnRegistry && strings.Contains(err.Error(), zkNodeHasNotRegisteredErr) {
-				log.DefaultLogger.Infof("%s %s service {%s} failed: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
+				log.DefaultLogger.Infof("%s %s service {%s} succ: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
 				succ = true
 			} else {
 				log.DefaultLogger.Errorf("%s %s service {%s} failed: %+v, err: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, evt, err)
@@ -225,6 +226,7 @@ func afterEventHandler(evt event) {
 
 	case OpRegistry:
 		// registry failed, but new snap exist should re-registry
+		log.DefaultLogger.Infof("registry service:%s failed, should re-registry", evt.ServiceInfo.Service.Interface)
 		if _, exist := list[evt.ServiceInfo.Service.Interface]; exist {
 			log.DefaultLogger.Infof("registry service:%s failed, should re-registry", evt.ServiceInfo.Service.Interface)
 			eventQueue <- evt
@@ -233,6 +235,7 @@ func afterEventHandler(evt event) {
 
 	case OpUnRegistry:
 		// unregistry failed, but new snap not exist, should re-unregistry
+		log.DefaultLogger.Infof("unregistry service:%s failed, should re-unregistry", evt.ServiceInfo.Service.Interface)
 		if _, exist := list[evt.ServiceInfo.Service.Interface]; !exist {
 			log.DefaultLogger.Infof("unregistry service:%s failed, should re-unregistry", evt.ServiceInfo.Service.Interface)
 			eventQueue <- evt

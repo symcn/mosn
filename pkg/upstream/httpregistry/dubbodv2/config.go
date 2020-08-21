@@ -37,7 +37,7 @@ var (
 	isCenterKey = "MOSN_CENTER_MODE"
 
 	// Path{dubbo://:@10.12.214.61:20882/?interface=abc\u0026group=\u0026version=} has been registered
-	zkNodeHasBeenRegisteredErr = "has been registered"
+	zkNodeHasBeenRegisteredErr = "already registered"
 	zkNodeHasNotRegisteredErr  = "has not registered"
 	zkConnErr                  = fmt.Errorf("zk not connected")
 )

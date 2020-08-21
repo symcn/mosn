@@ -117,7 +117,7 @@ func Test_registryReq(t *testing.T) {
 		args args
 	}{}
 
-	for i := 0; i < 500; i++ {
+	for i := 0; i < 200; i++ {
 		req := generatReqistryReq()
 		tests = append(tests, struct {
 			name string

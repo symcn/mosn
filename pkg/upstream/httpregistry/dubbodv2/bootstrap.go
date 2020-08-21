@@ -18,33 +18,38 @@ package dubbodv2
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/go-chi/chi"
 	dubbologger "github.com/symcn/registry/dubbo/common/logger"
 	"mosn.io/mosn/pkg/admin/store"
-	"mosn.io/mosn/pkg/log"
-	"mosn.io/pkg/utils"
 )
 
-// init the http api for application when application bootstrap
+// Init the http api for application when application bootstrap
 // for sub/pub
 func Init() {
 	// 1. init router
-	r := chi.NewRouter()
-	r.Get("/registry/info/sync", registryInfoSyncGet)
-	r.Post("/registry/info/sync", registryInfoSync)
+	// r := chi.NewRouter()
+	// r.Get("/registry/info/sync", registryInfoSyncGet)
+	// r.Post("/registry/info/sync", registryInfoSync)
 
 	_ = dubbologger.InitLog("./dubbogo.log")
+	dubbologger.SetLoggerLevel("INFO")
 
-	utils.GoWithRecover(func() {
-		for store.GetMosnState() != store.Running {
-			log.DefaultLogger.Infof("wait mosn status(%d) running", store.GetMosnState())
-			time.Sleep(time.Second * 1)
-		}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/registry/info/sync", registryInfoSync)
+	mux.HandleFunc("/registry/info/get", registryInfoSyncGet)
 
-		if err := http.ListenAndServe(GetHttpAddr(), r); err != nil {
-			log.DefaultLogger.Infof("auto write config when updated:%+v", err)
-		}
-	}, nil)
+	srv := &http.Server{Addr: GetHttpAddr(), Handler: mux}
+
+	store.AddService(srv, "Dubbo Registry Info Sync", nil, nil)
+
+	// utils.GoWithRecover(func() {
+	// for store.GetMosnState() != store.Running {
+	// log.DefaultLogger.Infof("wait mosn status(%d) running", store.GetMosnState())
+	// time.Sleep(time.Second * 1)
+	// }
+
+	// if err := http.ListenAndServe(GetHttpAddr(), r); err != nil {
+	// log.DefaultLogger.Infof("auto write config when updated:%+v", err)
+	// }
+	// }, nil)
 }
