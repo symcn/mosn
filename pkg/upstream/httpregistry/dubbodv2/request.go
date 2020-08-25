@@ -148,16 +148,7 @@ func doSubUnsub(req ServiceRegistryInfo, sub bool) error {
 
 	// register consumer to registry
 	if sub {
-		err = reg.Register(&dubboURL)
-		if err != nil {
-			return err
-		}
-	} else {
-		err = reg.UnRegister(&dubboURL)
-		if err != nil {
-			return err
-		}
+		return reg.Register(&dubboURL)
 	}
-
-	return nil
+	return reg.UnRegister(&dubboURL)
 }
