@@ -64,7 +64,7 @@ func autoUnPub() {
 	}
 }
 
-func autoCheckSchedul(reg dubboreg.Registry) {
+func autoCheckSchedule(reg dubboreg.Registry) {
 	if atomic.LoadUint64(&autoCheckDone) != 1 {
 		return
 	}
