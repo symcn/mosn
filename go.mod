@@ -11,7 +11,6 @@ require (
 	github.com/apache/dubbo-go-hessian2 v1.4.1-0.20200516085443-fa6429e4481d // perf: https://github.com/apache/dubbo-go-hessian2/pull/188
 	github.com/c2h5oh/datasize v0.0.0-20171227191756-4eba002a5eae
 	github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dchest/siphash v1.2.1
 	github.com/dubbogo/getty v1.3.8 // indirect
 	github.com/dubbogo/go-zookeeper v1.0.1 // indirect
@@ -55,7 +54,7 @@ require (
 	istio.io/api v0.0.0-20200227213531-891bf31f3c32
 	k8s.io/apimachinery v0.17.0
 	k8s.io/klog v1.0.0
-	mosn.io/api v0.0.0-20200729124336-c71e8f2074cb
+	mosn.io/api v0.0.0-20200813123503-e552003ba74e
 	mosn.io/pkg v0.0.0-20200729115159-2bd74f20be0f
 )
 
