@@ -8,6 +8,7 @@ import (
 
 	"github.com/symcn/registry/dubbo/common"
 	"mosn.io/mosn/pkg/log"
+	"mosn.io/mosn/pkg/types"
 )
 
 var (
@@ -20,22 +21,32 @@ func init() {
 
 func entryQueue(list []event, cur, old map[string]ServiceRegistryInfo, role Role) []event {
 	var (
-		registryList   = make(map[string]ServiceRegistryInfo, len(cur))
-		unRegistryList = make(map[string]ServiceRegistryInfo, len(old))
+		registryList   = make(map[string]struct{}, len(cur))
+		unRegistryList = make(map[string]struct{}, len(old))
 	)
 	// copy cur & old
-	for k, v := range cur {
-		registryList[k] = v
+	for k := range cur {
+		registryList[k] = struct{}{}
 	}
-	for k, v := range old {
-		unRegistryList[k] = v
+	for k := range old {
+		unRegistryList[k] = struct{}{}
 	}
 
 	// need registry
 	for s := range old {
 		delete(registryList, s)
 	}
-	for _, req := range registryList {
+	for k := range registryList {
+		req := cur[k]
+		// add pod info
+		for k, v := range types.GetPodLabels() {
+			if strings.EqualFold(k, podGroupKey) {
+				k = dubboGroupKey
+			}
+			req.Service.Params[k] = v
+		}
+		// rewrite info into snap
+		cur[k] = req
 		list = append(list, event{
 			Role:        role,
 			Operat:      OpRegistry,
@@ -47,7 +58,8 @@ func entryQueue(list []event, cur, old map[string]ServiceRegistryInfo, role Role
 	for s := range cur {
 		delete(unRegistryList, s)
 	}
-	for _, req := range unRegistryList {
+	for k := range unRegistryList {
+		req := old[k]
 		list = append(list, event{
 			Role:        role,
 			Operat:      OpUnRegistry,
