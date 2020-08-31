@@ -73,6 +73,7 @@ func HandleEnvoyCluster(client *ADSClient, resp *envoy_api_v2.DiscoveryResponse)
 	}
 
 	if len(clusterNames) != 0 {
+		DeleteEnvoyCluster(clusterNames)
 		if err := client.reqEndpoints(client.StreamClient, clusterNames); err != nil {
 			log.DefaultLogger.Warnf("send thread request eds fail!auto retry next period")
 		}
