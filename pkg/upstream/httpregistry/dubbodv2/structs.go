@@ -45,7 +45,7 @@ type ResponseInfo struct {
 type ServiceList struct {
 	PubInterfaceList        []string `json:"pub_interface_list,omitempty"`
 	SubInterfaceList        []string `json:"sub_interface_list,omitempty"`
-	SubInterfaceAlreadyList []string `json:"sub_interface_already_list,omitempty"`
+	DispatchedInterfaceList []string `json:"dispatched_interface_list"`
 	Version                 uint64   `json:"version"`
 }
 

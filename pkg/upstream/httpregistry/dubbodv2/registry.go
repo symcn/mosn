@@ -176,7 +176,7 @@ func loopReceiveEvent() {
 				l.Unlock()
 
 				// reduce cpu calc
-				arrangeAlreadySlice()
+				arrangeReadySlice()
 				continue
 			}
 
@@ -187,7 +187,7 @@ func loopReceiveEvent() {
 	}
 }
 
-func arrangeAlreadySlice() {
+func arrangeReadySlice() {
 	l.Lock()
 	defer l.Unlock()
 
@@ -201,8 +201,8 @@ func arrangeAlreadySlice() {
 		slist = append(slist, sn)
 	}
 
-	snapAlreadyRegistryPubList = plist
-	snapAlreadyRegistrySubList = slist
+	snapRegistryReadyPubList = plist
+	snapRegistryReadySubList = slist
 }
 
 func eventHandler(evt event) (err error) {

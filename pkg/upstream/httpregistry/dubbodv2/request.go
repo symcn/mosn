@@ -39,8 +39,8 @@ var (
 	snapSubList = make(map[string]ServiceRegistryInfo)
 	snapVersion uint64
 
-	snapAlreadyRegistryPubList []string
-	snapAlreadyRegistrySubList []string
+	snapRegistryReadyPubList []string
+	snapRegistryReadySubList []string
 
 	alreadyPubList = make(map[string]struct{})
 	alreadySubList = make(map[string]struct{})
@@ -48,9 +48,9 @@ var (
 
 func getRegistryInterfaceList() ServiceList {
 	sl := ServiceList{
-		PubInterfaceList:        snapAlreadyRegistryPubList,
-		SubInterfaceList:        snapAlreadyRegistrySubList,
-		SubInterfaceAlreadyList: make([]string, 0, len(snapAlreadyRegistrySubList)),
+		PubInterfaceList:        snapRegistryReadyPubList,
+		SubInterfaceList:        snapRegistryReadySubList,
+		DispatchedInterfaceList: make([]string, 0, len(snapRegistryReadySubList)),
 		Version:                 snapVersion,
 	}
 	if len(sl.SubInterfaceList) == 0 {
@@ -69,7 +69,7 @@ func getRegistryInterfaceList() ServiceList {
 	for _, subSvc := range sl.SubInterfaceList {
 		for k := range storeClusters {
 			if strings.Contains(strings.ToLower(k), strings.ToLower(subSvc)) {
-				sl.SubInterfaceAlreadyList = append(sl.SubInterfaceAlreadyList, subSvc)
+				sl.DispatchedInterfaceList = append(sl.DispatchedInterfaceList, subSvc)
 				break
 			}
 		}
