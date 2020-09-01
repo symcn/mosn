@@ -26,6 +26,7 @@ import (
 	"github.com/symcn/registry/dubbo/common"
 	dubbocommon "github.com/symcn/registry/dubbo/common"
 	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
+	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/trace"
 )
 
@@ -49,6 +50,7 @@ func getRegistryInterfaceList() ServiceList {
 		Version:          snapVersion,
 	}
 }
+
 func registryInfoSyncGet(w http.ResponseWriter, r *http.Request) {
 	response(w, ResponseInfo{Errno: succ, ErrMsg: "get service list succ", ServiceList: getRegistryInterfaceList()})
 	return
@@ -58,6 +60,7 @@ func registryInfoSyncGet(w http.ResponseWriter, r *http.Request) {
 func registryInfoSync(w http.ResponseWriter, r *http.Request) {
 	_, err := getRegistryWithCheck(common.PROVIDER)
 	if err != nil {
+		log.DefaultLogger.Errorf("getRegistryWithCheck error:%+v", err)
 		response(w, ResponseInfo{Errno: fail, ErrMsg: err.Error()})
 		return
 	}
@@ -65,6 +68,7 @@ func registryInfoSync(w http.ResponseWriter, r *http.Request) {
 	var req ServiceRegistrySnap
 	err = bind(r, &req)
 	if err != nil {
+		log.DefaultLogger.Errorf("bind requestinfo error:%+v", err)
 		response(w, ResponseInfo{Errno: fail, ErrMsg: err.Error()})
 		return
 	}
