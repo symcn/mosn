@@ -97,7 +97,7 @@
 	"cluster_manager": {
 		"clusters": [
 			{
-				"Name": "dubbo_provider_cluster",
+				"name": "dubbo_provider_cluster",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,
@@ -109,7 +109,7 @@
 				]
 			},
 			{
-				"Name": "dubbo_consumer_cluster2",
+				"name": "dubbo_consumer_cluster2",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,

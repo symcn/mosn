@@ -63,7 +63,7 @@
   "cluster_manager": {
     "clusters": [
       {
-        "Name": "clientCluster",
+        "name": "clientCluster",
         "type": "SIMPLE",
         "lb_type": "LB_RANDOM",
         "max_request_per_conn": 1024,

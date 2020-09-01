@@ -138,7 +138,7 @@
 	"cluster_manager": {
 		"clusters": [
 			{
-				"Name": "outbound|20882||mosn.io.dubbo.DemoService",
+				"name": "outbound|20882||mosn.io.dubbo.DemoService",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,

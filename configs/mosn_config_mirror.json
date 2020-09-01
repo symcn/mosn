@@ -179,7 +179,7 @@
 	"cluster_manager": {
 		"clusters": [
 			{
-				"Name": "dubbo_provider_cluster",
+				"name": "dubbo_provider_cluster",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,
@@ -191,7 +191,7 @@
 				]
 			},
 			{
-				"Name": "dubbo_mirror",
+				"name": "dubbo_mirror",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,
@@ -203,7 +203,7 @@
 				]
 			},
 			{
-				"Name": "http1",
+				"name": "http1",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,
@@ -215,7 +215,7 @@
 				]
 			},
 			{
-				"Name": "http1_mirror",
+				"name": "http1_mirror",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,
@@ -227,7 +227,7 @@
 				]
 			},
 			{
-				"Name": "http2",
+				"name": "http2",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,
@@ -239,7 +239,7 @@
 				]
 			},
 			{
-				"Name": "http2_mirror",
+				"name": "http2_mirror",
 				"type": "SIMPLE",
 				"lb_type": "LB_RANDOM",
 				"max_request_per_conn": 1024,

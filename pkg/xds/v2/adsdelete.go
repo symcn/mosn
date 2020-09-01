@@ -22,6 +22,10 @@ func DeleteEnvoyCluster(clusterNames []string) {
 	isExist := false
 
 	for k := range storeClusters {
+		if !strings.HasPrefix(k, "outbound") {
+			continue
+		}
+
 		isExist = false
 		for _, cn := range clusterNames {
 			if strings.EqualFold(k, cn) {

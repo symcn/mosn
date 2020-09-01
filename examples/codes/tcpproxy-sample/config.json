@@ -29,7 +29,7 @@
   "cluster_manager":{     
      "clusters":[
         {
-	  "Name":"serverCluster",
+	  "name":"serverCluster",
 	  "type": "SIMPLE",
 	  "lb_type": "LB_RANDOM",
 	  "max_request_per_conn": 1024,
