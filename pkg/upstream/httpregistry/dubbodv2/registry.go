@@ -148,7 +148,7 @@ func loopReceiveEvent() {
 			} else if evt.Operat == OpRegistry && strings.Contains(err.Error(), zkNodeHasBeenRegisteredErr) {
 				log.DefaultLogger.Infof("%s %s service {%s} succ: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
 				succ = true
-			} else if evt.Operat == OpUnRegistry && strings.Contains(err.Error(), zkNodeHasNotRegisteredErr) {
+			} else if evt.Operat == OpUnRegistry && (strings.Contains(err.Error(), zkNodeHasNotRegisteredErr) || strings.Contains(err.Error(), zkNodeNotExistErr)) {
 				log.DefaultLogger.Infof("%s %s service {%s} succ: %+v", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface, err)
 				succ = true
 			} else {

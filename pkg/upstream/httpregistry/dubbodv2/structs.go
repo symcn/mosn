@@ -43,9 +43,10 @@ type ResponseInfo struct {
 }
 
 type ServiceList struct {
-	PubInterfaceList []string `json:"pub_interface_list,omitempty"`
-	SubInterfaceList []string `json:"sub_interface_list,omitempty"`
-	Version          uint64   `json:"version"`
+	PubInterfaceList        []string `json:"pub_interface_list,omitempty"`
+	SubInterfaceList        []string `json:"sub_interface_list,omitempty"`
+	SubInterfaceAlreadyList []string `json:"sub_interface_already_list,omitempty"`
+	Version                 uint64   `json:"version"`
 }
 
 type snipInfo struct {

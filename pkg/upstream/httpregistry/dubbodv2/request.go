@@ -20,12 +20,15 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/symcn/registry/dubbo/common"
 	dubbocommon "github.com/symcn/registry/dubbo/common"
 	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
+	"mosn.io/mosn/pkg/admin/store"
+	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/trace"
 )
@@ -44,11 +47,35 @@ var (
 )
 
 func getRegistryInterfaceList() ServiceList {
-	return ServiceList{
-		PubInterfaceList: snapAlreadyRegistryPubList,
-		SubInterfaceList: snapAlreadyRegistrySubList,
-		Version:          snapVersion,
+	sl := ServiceList{
+		PubInterfaceList:        snapAlreadyRegistryPubList,
+		SubInterfaceList:        snapAlreadyRegistrySubList,
+		SubInterfaceAlreadyList: make([]string, 0, len(snapAlreadyRegistrySubList)),
+		Version:                 snapVersion,
 	}
+	if len(sl.SubInterfaceList) == 0 {
+		return sl
+	}
+
+	// return already can route service list
+	sobj := store.GetMOSNConfig(store.CfgTypeCluster)
+	if sobj == nil {
+		return sl
+	}
+	storeClusters, ok := sobj.(map[string]v2.Cluster)
+	if !ok {
+		return sl
+	}
+	for _, subSvc := range sl.SubInterfaceList {
+		for k := range storeClusters {
+			if strings.Contains(strings.ToLower(k), strings.ToLower(subSvc)) {
+				sl.SubInterfaceAlreadyList = append(sl.SubInterfaceAlreadyList, subSvc)
+				break
+			}
+		}
+	}
+
+	return sl
 }
 
 func registryInfoSyncGet(w http.ResponseWriter, r *http.Request) {
