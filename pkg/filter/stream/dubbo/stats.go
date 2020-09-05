@@ -15,6 +15,11 @@ const (
 	ResponseFail = "response_fail_total"
 	RequestTime  = "request_time"
 	podGroupKey  = "sym-group"
+
+	listenerKey = "listener"
+	serviceKey  = "service"
+	methodKey   = "method"
+	subsetKey   = "subset"
 )
 
 var (
@@ -42,10 +47,10 @@ func GetStatus(listener, service, method string) *Stats {
 
 	podl := types.GetPodLabels()
 	lables := map[string]string{
-		"listener": listener,
-		"service":  service,
-		"method":   method,
-		"subset":   podl[podGroupKey],
+		listenerKey: listener,
+		serviceKey:  service,
+		methodKey:   method,
+		subsetKey:   podl[podGroupKey],
 	}
 
 	mts, err := metrics.NewMetrics("mosn", lables)
