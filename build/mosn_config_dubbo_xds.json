@@ -176,7 +176,10 @@
 						"cluster_name": "xds-grpc"
 					}
 				}
-			]
+			],
+			"refresh_delay": {
+				"seconds": 300
+			}
 		}
 	}
 }
