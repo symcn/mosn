@@ -40,7 +40,7 @@
 					]
 				},
 				{
-					"name": "ingress_dubbo",
+					"name": "ingress_dubbo_provider",
 					"address": "0.0.0.0:20882",
 					"bind_port": true,
 					"log_path": "stdout",
@@ -55,7 +55,7 @@
 										"upstream_protocol": "X",
 										"router_config_name": "dubbo_provider_router",
 										"extend_config": {
-											"sub_protocol": "dubbodm"
+											"sub_protocol": "dubbo"
 										}
 									}
 								}
