@@ -29,7 +29,7 @@ Need more information? Visit https://istio.io/docs/setup/kubernetes/install/
 ## install
 
 ```shell
-$ ./istio-1.6.8/bin/istioctl manifest apply --set profile=minimal --set values.global.jwtPolicy=first-party-jwt --set addonComponents.grafana.enabled=false --set addonComponents.istiocoredns.enabled=false --set addonComponents.kiali.enabled=true --set addonComponents.prometheus.enabled=false --set addonComponents.tracing.enabled=false --set components.pilot.hub=docker.io/istio --set meshConfig.defaultConfig.binaryPath=/usr/local/bin/mosn --set meshConfig.defaultConfig.customConfigFile=/etc/istio/mosn/mosn_config_dubbo_xds.json --set meshConfig.defaultConfig.statusPort=15021 --set values.sidecarInjectorWebhook.rewriteAppHTTPProbe=false --set values.global.hub=symcn.tencentcloudcr.com/symcn --set values.global.proxy.logLevel=info
+$ ./istio-1.6.8/bin/istioctl manifest apply --set profile=minimal --set values.global.jwtPolicy=first-party-jwt --set addonComponents.grafana.enabled=false --set addonComponents.istiocoredns.enabled=false --set addonComponents.kiali.enabled=true --set addonComponents.prometheus.enabled=false --set addonComponents.tracing.enabled=false --set components.pilot.hub=docker.io/istio --set components.pilot.k8s.resources.requests.cpu=4000m --set components.pilot.k8s.resources.requests.memory=8Gi --set meshConfig.defaultConfig.binaryPath=/usr/local/bin/mosn --set meshConfig.defaultConfig.customConfigFile=/etc/istio/mosn/mosn_config_dubbo_xds.json --set meshConfig.defaultConfig.statusPort=15021 --set values.sidecarInjectorWebhook.rewriteAppHTTPProbe=false --set values.global.hub=symcn.tencentcloudcr.com/symcn --set values.global.proxy.logLevel=info --set values.kiali.hub=symcn.tencentcloudcr.com/symcn
 Detected that your cluster does not support third party JWT authentication. Falling back to less secure first party JWT. See https://istio.io/docs/ops/best-practices/security/#configure-third-party-service-account-tokens for details.
 ! global.mtls.auto is deprecated; use meshConfig.enableAutoMtls instead
 ✔ Istio core installed
@@ -120,6 +120,12 @@ data:
         - name: JWT_POLICY
           value: {{ .Values.global.jwtPolicy }}
 ......
+```
+
+## kiali config
+
+```
+kubectl create secret generic kiali -n istio-system --from-literal=username=admin --from-literal=passphrase=admin
 ```
 
 ## uninstall
