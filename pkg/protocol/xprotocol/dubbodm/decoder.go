@@ -32,7 +32,7 @@ import (
 
 // Decoder is heavy and caches to improve performance.
 // Avoid allocating 4k memory every time you create an object
-var decodePool = &sync.Pool{
+var decodePoolCheap = &sync.Pool{
 	New: func() interface{} {
 		return hessian.NewCheapDecoderWithSkip([]byte{})
 	},
@@ -84,12 +84,9 @@ func decodeFrame(ctx context.Context, data types.IoBuffer) (cmd interface{}, err
 	// not heartbeat & is request
 	if !frame.IsEvent && frame.Direction == EventRequest {
 		// service aware
-		meta, err := getServiceAwareMeta(ctx, frame)
+		err := getServiceAwareMeta(ctx, frame)
 		if err != nil {
 			return nil, err
-		}
-		for k, v := range meta {
-			frame.Set(k, v)
 		}
 	}
 
@@ -99,18 +96,17 @@ func decodeFrame(ctx context.Context, data types.IoBuffer) (cmd interface{}, err
 	return frame, nil
 }
 
-func getServiceAwareMeta(ctx context.Context, frame *Frame) (map[string]string, error) {
-	meta := make(map[string]string, 8)
+func getServiceAwareMeta(ctx context.Context, frame *Frame) error {
 	if frame.SerializationId != 2 {
 		// not hessian , do not support
-		return meta, fmt.Errorf("[xprotocol][dubbo] not hessian,do not support")
+		return fmt.Errorf("[xprotocol][dubbo] not hessian,do not support")
 	}
 
-	decoder := decodePool.Get().(*hessian.Decoder)
+	decoder := decodePoolCheap.Get().(*hessian.Decoder)
 	decoder.Reset(frame.payload[:])
 
 	// Recycle decode
-	defer decodePool.Put(decoder)
+	defer decodePoolCheap.Put(decoder)
 
 	var (
 		field               interface{}
@@ -124,19 +120,19 @@ func getServiceAwareMeta(ctx context.Context, frame *Frame) (map[string]string, 
 	// get service name
 	field, err = decoder.Decode()
 	if err != nil {
-		return meta, fmt.Errorf("[xprotocol][dubbo] decode framework version fail:%s", err)
+		return fmt.Errorf("[xprotocol][dubbo] decode framework version fail:%s", err)
 	}
 	// attachments
 	attachmentOffsetKey, ok = field.(string)
 	if !ok {
-		return meta, fmt.Errorf("[xprotocol][dubbo] decode framework version {%v} type error", attachmentOffsetKey)
+		return fmt.Errorf("[xprotocol][dubbo] decode framework version {%v} type error", attachmentOffsetKey)
 	}
 	offset, err = strconv.Atoi(attachmentOffsetKey)
 	if err != nil || offset < 1 {
-		return meta, fmt.Errorf("framework version {%s} is not number string or negetive number, err:%v", attachmentOffsetKey, err)
+		return fmt.Errorf("framework version {%s} is not number string or negetive number, err:%v", attachmentOffsetKey, err)
 	}
 	if offset >= len(frame.payload) {
-		return meta, fmt.Errorf("illegal offset number {%d} must <= body length {%d}", offset, len(frame.payload))
+		return fmt.Errorf("illegal offset number {%d} must <= body length {%d}", offset, len(frame.payload))
 	}
 
 	// reset attachement to decode
@@ -144,7 +140,7 @@ func getServiceAwareMeta(ctx context.Context, frame *Frame) (map[string]string, 
 
 	field, err = decoder.Decode()
 	if err != nil {
-		return nil, fmt.Errorf("[xprotocol][dubbo] decode dubbo attachments error, %v", err)
+		return fmt.Errorf("[xprotocol][dubbo] decode dubbo attachments error, %v", err)
 	}
 	if field != nil {
 		if origin, ok := field.(map[interface{}]interface{}); ok {
@@ -161,11 +157,12 @@ func getServiceAwareMeta(ctx context.Context, frame *Frame) (map[string]string, 
 						default:
 						}
 
-						meta[key] = val
+						// meta[key] = val
+						frame.Set(key, val)
 					}
 				}
 			}
 		}
 	}
-	return meta, nil
+	return nil
 }

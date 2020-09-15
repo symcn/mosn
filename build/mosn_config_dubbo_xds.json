@@ -178,7 +178,7 @@
 				}
 			],
 			"refresh_delay": {
-				"seconds": 300
+				"seconds": 20
 			}
 		}
 	}
