@@ -38,7 +38,7 @@ func init() {
 		return true
 	})
 
-	cluster.NewClusterManagerSingleton(nil, nil)
+	cluster.NewClusterManagerSingleton(nil, nil, nil)
 
 }
 
