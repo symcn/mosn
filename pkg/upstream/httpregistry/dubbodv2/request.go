@@ -57,26 +57,27 @@ func getRegistryInterfaceList() ServiceList {
 	}
 
 	// return already can route service list
-	sobj := store.GetMOSNConfig(store.CfgTypeCluster)
-	if sobj == nil {
-		return sl
-	}
-	storeClusters, ok := sobj.(map[string]v2.Cluster)
-	if !ok {
-		return sl
-	}
+	store.GetMosnConfigWithCb(store.CfgTypeCluster, func(sobj interface{}) {
+		if sobj == nil {
+			return
+		}
+		storeClusters, ok := sobj.(map[string]v2.Cluster)
+		if !ok {
+			return
+		}
 
-	// build can dispatchd interface list
-	sl.DispatchedInterfaceList = make([]string, 0, len(snapRegistryReadySubList))
+		// build can dispatchd interface list
+		sl.DispatchedInterfaceList = make([]string, 0, len(snapRegistryReadySubList))
 
-	for _, subSvc := range sl.SubInterfaceList {
-		for k := range storeClusters {
-			if strings.Contains(strings.ToLower(k), strings.ToLower(subSvc)) {
-				sl.DispatchedInterfaceList = append(sl.DispatchedInterfaceList, subSvc)
-				break
+		for _, subSvc := range sl.SubInterfaceList {
+			for k := range storeClusters {
+				if strings.Contains(strings.ToLower(k), strings.ToLower(subSvc)) {
+					sl.DispatchedInterfaceList = append(sl.DispatchedInterfaceList, subSvc)
+					break
+				}
 			}
 		}
-	}
+	})
 
 	return sl
 }

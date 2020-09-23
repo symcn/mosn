@@ -206,7 +206,7 @@ func (c *ADSConfig) GetStreamClient() ads.AggregatedDiscoveryService_StreamAggre
 	}
 
 	if tlsContext == nil || !featuregate.Enabled(featuregate.XdsMtlsEnable) {
-		conn, err := grpc.Dial(endpoint, grpc.WithInsecure())
+		conn, err := grpc.Dial(endpoint, grpc.WithInsecure(), grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(8*1024*1024)))
 		if err != nil {
 			log.DefaultLogger.Errorf("did not connect: %v", err)
 			return nil

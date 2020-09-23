@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"sync"
 
-	"mosn.io/mosn/pkg/config/v2"
+	v2 "mosn.io/mosn/pkg/config/v2"
 )
 
 // effectiveConfig represents mosn's runtime config model
@@ -159,5 +159,23 @@ func GetMOSNConfig(typ string) interface{} {
 		return conf.Listener
 	default:
 		return nil
+	}
+}
+
+func GetMosnConfigWithCb(typ string, cb func(x interface{})) {
+	mutex.RLock()
+	defer mutex.RUnlock()
+
+	switch typ {
+	case CfgTypeMOSN:
+		cb(conf.MosnConfig)
+	case CfgTypeRouter:
+		cb(conf.Routers)
+	case CfgTypeCluster:
+		cb(conf.Cluster)
+	case CfgTypeListener:
+		cb(conf.Listener)
+	default:
+		cb(nil)
 	}
 }
