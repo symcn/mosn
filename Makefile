@@ -5,7 +5,7 @@ TARGET_SIDECAR  = mosn
 CONFIG_FILE     = mosn_config.json
 PROJECT_NAME    = mosn.io/mosn
 
-ISTIO_VERSION   = 1.6.8
+ISTIO_VERSION   = 1.6.10
 
 SCRIPT_DIR      = $(shell pwd)/etc/script
 
