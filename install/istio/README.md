@@ -29,7 +29,7 @@ Need more information? Visit https://istio.io/docs/setup/kubernetes/install/
 ## install
 
 ```shell
-$ ./istio-1.7.3/bin/istioctl install --set profile=minimal --set values.global.jwtPolicy=first-party-jwt --set addonComponents.grafana.enabled=false --set addonComponents.istiocoredns.enabled=false --set addonComponents.kiali.enabled=true --set addonComponents.prometheus.enabled=false --set addonComponents.tracing.enabled=false --set components.pilot.hub=docker.io/istio --set components.pilot.k8s.resources.requests.cpu=4000m --set components.pilot.k8s.resources.requests.memory=8Gi --set meshConfig.defaultConfig.binaryPath=/usr/local/bin/mosn --set meshConfig.defaultConfig.customConfigFile=/etc/istio/mosn/mosn_config_dubbo_xds.json --set meshConfig.defaultConfig.statusPort=15021 --set values.sidecarInjectorWebhook.rewriteAppHTTPProbe=false --set values.global.hub=symcn.tencentcloudcr.com/symcn --set values.global.proxy.logLevel=info --set values.kiali.hub=symcn.tencentcloudcr.com/symcn
+$ ./istio-1.7.3/bin/istioctl install --set profile=minimal --set values.global.jwtPolicy=first-party-jwt --set addonComponents.grafana.enabled=false --set addonComponents.istiocoredns.enabled=false --set addonComponents.kiali.enabled=true --set addonComponents.prometheus.enabled=false --set addonComponents.tracing.enabled=false --set components.pilot.hub=docker.io/istio --set components.pilot.k8s.resources.requests.cpu=4000m --set components.pilot.k8s.resources.requests.memory=8Gi --set meshConfig.defaultConfig.binaryPath=/usr/local/bin/mosn --set meshConfig.defaultConfig.customConfigFile=/etc/istio/mosn/mosn_config_dubbo_xds.json --set meshConfig.defaultConfig.statusPort=15021 --set values.sidecarInjectorWebhook.rewriteAppHTTPProbe=false --set values.global.hub=symcn.tencentcloudcr.com/symcn --set values.global.proxy.logLevel=info --set values.kiali.hub=symcn.tencentcloudcr.com/symcn --set values.global.proxy.autoInject=disabled
 Detected that your cluster does not support third party JWT authentication. Falling back to less secure first party JWT. See https://istio.io/docs/ops/best-practices/security/#configure-third-party-service-account-tokens for details.
 ! addonComponents.kiali.enabled is deprecated; use the samples/addons/ deployments instead
 ✔ Istio core installed
@@ -48,8 +48,6 @@ if already install istioctl
 ```shell
 kubectl edit configmap -n istio-system istio-sidecar-injector
 ```
-
-- modify `data.config.policy`: disabled
 
 - add `data.config.template.containers.env`, such as: MOSN_ZK_ADDRESS
 
