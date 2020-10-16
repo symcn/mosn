@@ -20,7 +20,7 @@ var (
 func init() {
 	hb = make(chan struct{}, 3)
 
-	expireTime = GetHeartExpireTime()
+	expireTime = GetRegistryHttpExpireTime()
 	timer = time.NewTimer(expireTime)
 
 	go loopCheckHeartbeat()
@@ -71,9 +71,9 @@ func autoCheckSchedule(reg dubboreg.Registry) {
 
 	atomic.StoreUint64(&autoCheckDone, 0)
 
-	for i := GetAutoCheckNum(); i != 0; {
+	for i := GetRegistryAutoCheckNum(); i != 0; {
 
-		time.Sleep(GetAutoCheckInterval())
+		time.Sleep(GetRegistryAutoCheckIntervalTime())
 
 		l.RLock()
 		if len(snapPubList) == 0 && len(snapSubList) == 0 {
@@ -84,7 +84,7 @@ func autoCheckSchedule(reg dubboreg.Registry) {
 
 		if !reg.ConnectState() {
 			// connect close should re-check
-			i = GetAutoCheckNum()
+			i = GetRegistryAutoCheckNum()
 			continue
 		}
 

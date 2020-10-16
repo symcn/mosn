@@ -38,7 +38,7 @@ func Init() {
 	mux.HandleFunc("/registry/info/sync", registryInfoSync)
 	mux.HandleFunc("/registry/info/get", registryInfoSyncGet)
 
-	srv := &http.Server{Addr: GetHttpAddr(), Handler: mux}
+	srv := &http.Server{Addr: GetRegistryHttpPort(), Handler: mux}
 
 	store.AddService(srv, "Dubbo Registry Info Sync", nil, nil)
 

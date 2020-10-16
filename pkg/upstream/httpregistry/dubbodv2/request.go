@@ -129,7 +129,7 @@ func doPubUnPub(req ServiceRegistryInfo, pub bool) error {
 		executeMap[port] = fmt.Sprintf("%d", req.Port)
 	} else {
 		executeMap[ip] = trace.GetIp()
-		executeMap[port] = fmt.Sprintf("%d", GetExportDubboPort())
+		executeMap[port] = fmt.Sprintf("%d", GetDubboExportPort())
 	}
 
 	var dubboPath = dubboPathTpl.ExecuteString(executeMap)

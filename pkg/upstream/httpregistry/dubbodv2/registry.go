@@ -181,7 +181,7 @@ func loopReceiveEvent() {
 			}
 
 			// exec fail, judge need re-entry
-			time.Sleep(GetZkInterval())
+			time.Sleep(GetZkOperatorErrorIntervalTime())
 			afterEventHandler(evt)
 		}
 	}

@@ -75,7 +75,7 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 		return reg, nil
 	}
 
-	addrStr := GetZookeeperAddr()
+	addrStr := GetZkAddr()
 	addresses := strings.Split(addrStr, ",")
 	address := addresses[0]
 	var registryPath = registryPathTpl.ExecuteString(map[string]interface{}{
@@ -85,7 +85,7 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 	registryURL, err := dubbocommon.NewURL(registryPath,
 		dubbocommon.WithParams(url.Values{
 			dubboconsts.REGISTRY_KEY:         []string{zookeeper},
-			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZookeeperTimeout()},
+			dubboconsts.REGISTRY_TIMEOUT_KEY: []string{GetZkConnTimeoutStr()},
 			dubboconsts.ROLE_KEY:             []string{fmt.Sprint(role)},
 		}),
 		dubbocommon.WithLocation(addrStr),
