@@ -32,11 +32,18 @@ import (
 
 // Decoder is heavy and caches to improve performance.
 // Avoid allocating 4k memory every time you create an object
-var decodePoolCheap = &sync.Pool{
-	New: func() interface{} {
-		return hessian.NewCheapDecoderWithSkip([]byte{})
-	},
-}
+var (
+	decodePoolCheap = &sync.Pool{
+		New: func() interface{} {
+			return hessian.NewCheapDecoderWithSkip([]byte{})
+		},
+	}
+	decodePool = &sync.Pool{
+		New: func() interface{} {
+			return hessian.NewDecoderWithSkip([]byte{})
+		},
+	}
+)
 
 func decodeFrame(ctx context.Context, data types.IoBuffer) (cmd interface{}, err error) {
 	// convert data to dubbo frame

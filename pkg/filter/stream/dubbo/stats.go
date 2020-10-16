@@ -9,22 +9,24 @@ import (
 	"mosn.io/mosn/pkg/types"
 )
 
-const (
+var (
 	ServiceInfo  = "request_total"
 	ResponseSucc = "response_succ_total"
 	ResponseFail = "response_fail_total"
 	RequestTime  = "request_time"
-	podGroupKey  = "sym-group"
 
 	listenerKey = "listener"
 	serviceKey  = "service"
 	methodKey   = "method"
 	subsetKey   = "subset"
+
+	podSubsetKey = ""
+	metricPre    = "mosn"
 )
 
 var (
-	l            sync.Mutex
-	statsFactory = make(map[string]*Stats, 20)
+	l            sync.RWMutex
+	statsFactory = make(map[string]*Stats)
 )
 
 type Stats struct {
@@ -33,33 +35,42 @@ type Stats struct {
 	ResponseFail       gometrics.Counter
 }
 
-func GetStatus(listener, service, method string) *Stats {
+func getStats(listener, service, method string) *Stats {
 	key := service + "-" + method
-	if s, ok := statsFactory[key]; ok {
+
+	l.RLock()
+	s, ok := statsFactory[key]
+	l.RUnlock()
+	if ok {
 		return s
 	}
 
 	l.Lock()
 	defer l.Unlock()
-	if s, ok := statsFactory[key]; ok {
+	if s, ok = statsFactory[key]; ok {
 		return s
 	}
 
-	podl := types.GetPodLabels()
 	lables := map[string]string{
 		listenerKey: listener,
 		serviceKey:  service,
 		methodKey:   method,
-		subsetKey:   podl[podGroupKey],
+	}
+	if podSubsetKey != "" {
+		pl := types.GetPodLabels()
+		if pl[podSubsetKey] != "" {
+			lables[subsetKey] = pl[podSubsetKey]
+		}
 	}
 
-	mts, err := metrics.NewMetrics("mosn", lables)
+	mts, err := metrics.NewMetrics(metricPre, lables)
 	if err != nil {
-		log.DefaultLogger.Errorf("create metrics fail: %v", err)
+		log.DefaultLogger.Errorf("create metrics fail: labels:%v, err: %v", lables, err)
 		statsFactory[key] = nil
 		return nil
 	}
-	s := &Stats{
+
+	s = &Stats{
 		RequestServiceInfo: mts.Counter(ServiceInfo),
 		ResponseSucc:       mts.Counter(ResponseSucc),
 		ResponseFail:       mts.Counter(ResponseFail),

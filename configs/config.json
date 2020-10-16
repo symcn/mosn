@@ -36,7 +36,9 @@
 					"stream_filters": [
 						{
 							"type": "dubbo_stream",
-							"config": {}
+							"config": {
+								"subset": "sym-group"
+							}
 						}
 					]
 				},
