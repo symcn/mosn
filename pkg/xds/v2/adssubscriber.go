@@ -19,7 +19,6 @@ package v2
 
 import (
 	"math/rand"
-	"strings"
 	"time"
 
 	"mosn.io/mosn/pkg/log"
@@ -85,12 +84,8 @@ func (adsClient *ADSClient) receiveThread() {
 			}
 			resp, err := sc.Recv()
 			if err != nil {
-				if strings.Contains(err.Error(), "transport is closing") {
-					adsClient.reconnect()
-					continue
-				}
-
-				log.DefaultLogger.Infof("[xds] [ads client] get resp timeout: %v, retry after 1s", err)
+				// rpc error: code = Unavailable desc = transport is closing
+				log.DefaultLogger.Infof("[xds] [ads client] get resp error: %v, retry after 1s", err)
 				time.Sleep(time.Second)
 				continue
 			}
