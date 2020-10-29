@@ -23,6 +23,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"math/rand"
 	"time"
 
@@ -317,10 +318,8 @@ func (c *ADSConfig) closeADSStreamClient() {
 // if got
 // [xds] [ads client] get resp timeout: rpc error: code = ResourceExhausted desc = grpc: received message larger than max (5193322 vs. 4194304), retry after 1s
 // this log, should change this size
-const xdsMaxRecvMsgSize = 8 * 1024 * 1024
-
 func generateDialOption() grpc.DialOption {
 	return grpc.WithDefaultCallOptions(
-		grpc.MaxCallRecvMsgSize(xdsMaxRecvMsgSize),
+		grpc.MaxCallRecvMsgSize(math.MaxInt32),
 	)
 }
