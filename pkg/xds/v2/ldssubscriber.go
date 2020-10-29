@@ -35,7 +35,7 @@ func (c *ADSClient) reqListeners(streamClient ads.AggregatedDiscoveryService_Str
 	err := streamClient.Send(&envoy_api_v2.DiscoveryRequest{
 		VersionInfo:   "",
 		ResourceNames: []string{},
-		TypeUrl:       "type.googleapis.com/envoy.api.v2.Listener",
+		TypeUrl:       EnvoyListener,
 		ResponseNonce: "",
 		ErrorDetail:   nil,
 		Node: &envoy_api_v2_core1.Node{

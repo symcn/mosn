@@ -42,7 +42,7 @@ func (c *ADSClient) reqRoutes(streamClient ads.AggregatedDiscoveryService_Stream
 	err := streamClient.Send(&envoy_api_v2.DiscoveryRequest{
 		VersionInfo:   "",
 		ResourceNames: routerNames,
-		TypeUrl:       "type.googleapis.com/envoy.api.v2.RouteConfiguration",
+		TypeUrl:       EnvoyRoute,
 		ResponseNonce: "",
 		ErrorDetail:   nil,
 		Node: &envoy_api_v2_core1.Node{

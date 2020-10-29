@@ -24,7 +24,7 @@ import (
 	"sync"
 
 	"github.com/ghodss/yaml"
-	"mosn.io/mosn/pkg/config/v2"
+	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 )
 
@@ -37,6 +37,8 @@ var (
 	conf effectiveConfig
 	// configLoadFunc can be replaced by load config extension
 	configLoadFunc ConfigLoadFunc = DefaultConfigLoad
+
+	mutex sync.RWMutex
 )
 
 // protetced configPath, read only

@@ -23,7 +23,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"math/rand"
 	"time"
 
@@ -37,7 +36,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	"mosn.io/mosn/pkg/featuregate"
 	"mosn.io/mosn/pkg/log"
-	"mosn.io/mosn/pkg/xds/conv"
+	"mosn.io/mosn/pkg/xds/v2/conv"
 )
 
 //  Init parsed ds and clusters config for xds
@@ -207,7 +206,7 @@ func (c *ADSConfig) GetStreamClient() ads.AggregatedDiscoveryService_StreamAggre
 	}
 
 	if tlsContext == nil || !featuregate.Enabled(featuregate.XdsMtlsEnable) {
-		conn, err := grpc.Dial(endpoint, grpc.WithInsecure(), generateDialOption())
+		conn, err := grpc.Dial(endpoint, grpc.WithInsecure())
 		if err != nil {
 			log.DefaultLogger.Errorf("did not connect: %v", err)
 			return nil
@@ -221,7 +220,7 @@ func (c *ADSConfig) GetStreamClient() ads.AggregatedDiscoveryService_StreamAggre
 			log.DefaultLogger.Errorf("xds-grpc get tls creds fail: err= %v", err)
 			return nil
 		}
-		conn, err := grpc.Dial(endpoint, grpc.WithTransportCredentials(creds), generateDialOption())
+		conn, err := grpc.Dial(endpoint, grpc.WithTransportCredentials(creds))
 		if err != nil {
 			log.DefaultLogger.Errorf("did not connect: %v", err)
 			return nil
@@ -299,13 +298,4 @@ func (c *ADSConfig) closeADSStreamClient() {
 	}
 	c.StreamClient.Client = nil
 	c.StreamClient = nil
-}
-
-// [xds] [ads client] get resp timeout: rpc error: code = ResourceExhausted desc = grpc: received message larger than max (5193322 vs. 4194304), retry after 1s
-// https://github.com/istio/istio/blob/9686754643d0939c1f4dd0ee20443c51183f3589/pilot/pkg/bootstrap/server.go#L662
-// Istio xDS DiscoveryServer not set grpc MaxSendMsgSize. If this is not set, gRPC uses the default `math.MaxInt32`.
-func generateDialOption() grpc.DialOption {
-	return grpc.WithDefaultCallOptions(
-		grpc.MaxCallRecvMsgSize(math.MaxInt32),
-	)
 }

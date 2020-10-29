@@ -84,8 +84,7 @@ func (adsClient *ADSClient) receiveThread() {
 			}
 			resp, err := sc.Recv()
 			if err != nil {
-				// rpc error: code = Unavailable desc = transport is closing
-				log.DefaultLogger.Infof("[xds] [ads client] get resp error: %v, retry after 1s", err)
+				log.DefaultLogger.Infof("[xds] [ads client] get resp timeout: %v, retry after 1s", err)
 				time.Sleep(time.Second)
 				continue
 			}

@@ -20,12 +20,6 @@ import (
 	"time"
 )
 
-var outBufPool = sync.Pool{
-	New: func() interface{} {
-		return new([]byte)
-	},
-}
-
 // A Conn represents a secured connection.
 // It implements the net.Conn interface.
 type Conn struct {
@@ -922,20 +916,6 @@ func (c *Conn) flush() (int, error) {
 // writeRecordLocked writes a TLS record with the given type and payload to the
 // connection and updates the record layer state.
 func (c *Conn) writeRecordLocked(typ recordType, data []byte) (int, error) {
-	bufPtr := outBufPool.Get().(*[]byte)
-	c.outBuf = *bufPtr
-
-	defer func() {
-		if len(c.outBuf) > len(*bufPtr) {
-			buf := c.outBuf
-			bufPtr = &buf
-		}
-
-		// return buffer to pool
-		outBufPool.Put(bufPtr)
-		c.outBuf = nil
-	}()
-
 	var n int
 	for len(data) > 0 {
 		m := len(data)

@@ -27,8 +27,8 @@ import (
 	"github.com/symcn/registry/dubbo/common"
 	dubbocommon "github.com/symcn/registry/dubbo/common"
 	dubboconsts "github.com/symcn/registry/dubbo/common/constant"
-	"mosn.io/mosn/pkg/admin/store"
 	v2 "mosn.io/mosn/pkg/config/v2"
+	"mosn.io/mosn/pkg/configmanager"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/trace"
 )
@@ -57,7 +57,7 @@ func getRegistryInterfaceList() ServiceList {
 	}
 
 	// return already can route service list
-	store.GetMosnConfigWithCb(store.CfgTypeCluster, func(sobj interface{}) {
+	configmanager.GetMosnConfigWithCb(configmanager.CfgTypeCluster, func(sobj interface{}) {
 		if sobj == nil {
 			return
 		}
