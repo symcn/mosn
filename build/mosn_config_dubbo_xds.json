@@ -156,7 +156,7 @@
                                     "endpoint": {
                                         "address": {
                                             "socket_address": {
-                                                "address": "127.0.0.1",
+                                                "address": "istiod.istio-system.svc",
                                                 "port_value": 15010
                                             }
                                         }
