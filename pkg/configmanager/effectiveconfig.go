@@ -184,38 +184,3 @@ func HandleMOSNConfig(typ string, handle func(interface{})) {
 	v := getMOSNConfig(typ)
 	handle(v)
 }
-
-func GetMOSNConfig(typ string) interface{} {
-	mutex.RLock()
-	defer mutex.RUnlock()
-	switch typ {
-	case CfgTypeMOSN:
-		return conf.MosnConfig
-	case CfgTypeRouter:
-		return conf.Routers
-	case CfgTypeCluster:
-		return conf.Cluster
-	case CfgTypeListener:
-		return conf.Listener
-	default:
-		return nil
-	}
-}
-
-func GetMosnConfigWithCb(typ string, cb func(x interface{})) {
-	mutex.RLock()
-	defer mutex.RUnlock()
-
-	switch typ {
-	case CfgTypeMOSN:
-		cb(conf.MosnConfig)
-	case CfgTypeRouter:
-		cb(conf.Routers)
-	case CfgTypeCluster:
-		cb(conf.Cluster)
-	case CfgTypeListener:
-		cb(conf.Listener)
-	default:
-		cb(nil)
-	}
-}

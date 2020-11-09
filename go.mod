@@ -45,6 +45,7 @@ require (
 	google.golang.org/grpc v1.28.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	istio.io/api v0.0.0-20200227213531-891bf31f3c32
+	k8s.io/apimachinery v0.17.0
 	k8s.io/klog v1.0.0
 	mosn.io/api v0.0.0-20200813123503-e552003ba74e
 	mosn.io/pkg v0.0.0-20200729115159-2bd74f20be0f

@@ -57,7 +57,7 @@ func getRegistryInterfaceList() ServiceList {
 	}
 
 	// return already can route service list
-	configmanager.GetMosnConfigWithCb(configmanager.CfgTypeCluster, func(sobj interface{}) {
+	configmanager.HandleMOSNConfig(configmanager.CfgTypeCluster, func(sobj interface{}) {
 		if sobj == nil {
 			return
 		}
