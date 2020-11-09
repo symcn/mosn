@@ -19,6 +19,7 @@ package xprotocol
 
 import (
 	"context"
+	"math"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -46,7 +47,7 @@ type poolMultiplex struct {
 // NewPoolMultiplex generates a multiplex conn pool
 func NewPoolMultiplex(p *connpool) types.ConnectionPool {
 	maxConns := p.Host().ClusterInfo().ResourceManager().Connections().Max()
-	if maxConns == 0 {
+	if maxConns == 0 || maxConns == math.MaxUint32 {
 		// default conn num should be 1
 		maxConns = 1
 	}
