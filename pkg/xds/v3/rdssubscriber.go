@@ -33,16 +33,17 @@ func (c *ADSClient) reqRoutes(streamClient envoy_service_discovery_v3.Aggregated
 	if streamClient == nil {
 		return errors.New("stream client is nil")
 	}
-	routerNames := rds.GetRouterNames()
-	if len(routerNames) < 1 {
+	rs := getResponseNonceWithType(EnvoyEndpoint)
+	rs.Resource = rds.GetRouterNames()
+	if len(rs.Resource) < 1 {
 		log.DefaultLogger.Tracef("0 routers, skip rds request")
 		return nil
 	}
 	err := streamClient.Send(&envoy_service_discovery_v3.DiscoveryRequest{
-		VersionInfo:   "",
-		ResourceNames: routerNames,
+		VersionInfo:   rs.Version,
+		ResourceNames: rs.Resource,
 		TypeUrl:       EnvoyRoute,
-		ResponseNonce: GetResponseNonceWithType(EnvoyRoute),
+		ResponseNonce: rs.Nonce,
 		ErrorDetail:   nil,
 		Node: &envoy_config_core_v3.Node{
 			Id:       types.GetGlobalXdsInfo().ServiceNode,

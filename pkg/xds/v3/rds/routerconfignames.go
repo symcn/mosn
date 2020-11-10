@@ -46,7 +46,7 @@ func GetRouterNames() []string {
 	defer mu.Unlock()
 	names := make([]string, len(routerNames))
 	i := 0
-	for name, _ := range routerNames {
+	for name := range routerNames {
 		names[i] = name
 		i++
 	}

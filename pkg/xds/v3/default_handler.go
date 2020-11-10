@@ -37,9 +37,17 @@ const (
 	EnvoyRoute    = resource.RouteType
 )
 
+type responseSnap struct {
+	Nonce    string
+	Version  string
+	Resource []string
+}
+
 var (
-	responseNonceMap map[string]string
+	responseNonceMap map[string]responseSnap
 	mutex            sync.Mutex
+	clusterNames     []string
+	routerNames      []string
 )
 
 func init() {
@@ -72,7 +80,7 @@ func HandleEnvoyCluster(client *ADSClient, resp *envoy_service_discovery_v3.Disc
 
 	AckResponse(client.StreamClient, resp)
 
-	clusterNames := make([]string, 0)
+	clusterNames = make([]string, 0)
 
 	for _, cluster := range clusters {
 		if cluster.GetType() == envoy_config_cluster_v3.Cluster_EDS {
@@ -112,29 +120,53 @@ func HandleEnvoyRoute(client *ADSClient, resp *envoy_service_discovery_v3.Discov
 	log.DefaultLogger.Infof("get %d routes from RDS", len(routes))
 	conv.ConvertAddOrUpdateRouters(routes)
 
+	routerNames = make([]string, 0, len(routes))
+	for _, rt := range routes {
+		routerNames = append(routerNames, rt.Name)
+	}
+
 	AckResponse(client.StreamClient, resp)
 }
 
-// GetResponseNonceWithType get responsenonce with type string
-func GetResponseNonceWithType(reqType string) string {
+// getResponseNonceWithType get responsenonce with type string
+func getResponseNonceWithType(reqType string) responseSnap {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	return responseNonceMap[reqType]
+	rs, ok := responseNonceMap[reqType]
+	if ok {
+		return rs
+	}
+	return responseSnap{}
 }
 
 // AckResponse response resource nonce
 func AckResponse(streamClient envoy_service_discovery_v3.AggregatedDiscoveryService_StreamAggregatedResourcesClient, resp *envoy_service_discovery_v3.DiscoveryResponse) {
+
+	resource := []string{}
+
+	switch resp.TypeUrl {
+	case EnvoyEndpoint:
+		resource = clusterNames
+	case EnvoyRoute:
+		resource = routerNames
+	default:
+	}
+
 	mutex.Lock()
 	if responseNonceMap == nil {
-		responseNonceMap = make(map[string]string, 10)
+		responseNonceMap = make(map[string]responseSnap, 10)
 	}
-	responseNonceMap[resp.TypeUrl] = resp.Nonce
+	responseNonceMap[resp.TypeUrl] = responseSnap{
+		Nonce:    resp.Nonce,
+		Version:  resp.VersionInfo,
+		Resource: resource,
+	}
 	mutex.Unlock()
 
 	err := streamClient.Send(&envoy_service_discovery_v3.DiscoveryRequest{
 		VersionInfo:   resp.VersionInfo,
-		ResourceNames: []string{},
+		ResourceNames: resource,
 		TypeUrl:       resp.TypeUrl,
 		ResponseNonce: resp.Nonce,
 		ErrorDetail:   nil,

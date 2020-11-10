@@ -32,11 +32,12 @@ func (c *ADSClient) reqListeners(streamClient envoy_service_discovery_v3.Aggrega
 	if streamClient == nil {
 		return errors.New("stream client is nil")
 	}
+	rs := getResponseNonceWithType(EnvoyListener)
 	err := streamClient.Send(&envoy_service_discovery_v3.DiscoveryRequest{
-		VersionInfo:   "",
-		ResourceNames: []string{},
+		VersionInfo:   rs.Version,
+		ResourceNames: rs.Resource,
 		TypeUrl:       EnvoyListener,
-		ResponseNonce: GetResponseNonceWithType(EnvoyListener),
+		ResponseNonce: rs.Nonce,
 		ErrorDetail:   nil,
 		Node: &envoy_config_core_v3.Node{
 			Id:       types.GetGlobalXdsInfo().ServiceNode,
