@@ -17,7 +17,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 40,
-    "iteration": 1604906312145,
+    "iteration": 1605072351211,
     "links": [],
     "panels": [
         {
@@ -148,10 +148,9 @@
             {
                 "allValue": null,
                 "current": {
-                    "isNone": true,
                     "selected": false,
-                    "text": "None",
-                    "value": ""
+                    "text": "com.dmall.AsyncTest.api.UserInfoService",
+                    "value": "com.dmall.AsyncTest.api.UserInfoService"
                 },
                 "datasource": "$datasource",
                 "definition": "label_values(mosn_request_total{}, service)",
@@ -197,4 +196,3 @@
     "uid": "TQKqYzGGk",
     "version": 2
 }
-

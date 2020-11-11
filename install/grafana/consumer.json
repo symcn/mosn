@@ -17,7 +17,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 38,
-    "iteration": 1604906282302,
+    "iteration": 1605072202362,
     "links": [],
     "panels": [
         {
@@ -129,10 +129,106 @@
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
+                "h": 7,
+                "w": 24,
+                "x": 0,
+                "y": 8
+            },
+            "hiddenSeries": false,
+            "id": 2,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "dataLinks": []
+            },
+            "percentage": false,
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "repeat": null,
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "expr": "(sum by (service, method) (increase(mosn_request_total{service=\"$service\", instance=\"$instance\"}[1m])))",
+                    "instant": false,
+                    "interval": "1m",
+                    "legendFormat": "{{service}}-{{method}}",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "请求数量",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "format": "none",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": null,
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {}
+                },
+                "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 8
+                "y": 15
             },
             "hiddenSeries": false,
             "id": 4,
@@ -227,7 +323,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 8
+                "y": 15
             },
             "hiddenSeries": false,
             "id": 6,
@@ -321,7 +417,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 16
+                "y": 23
             },
             "hiddenSeries": false,
             "id": 8,
@@ -415,7 +511,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 16
+                "y": 23
             },
             "hiddenSeries": false,
             "id": 10,
@@ -509,7 +605,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 24
+                "y": 31
             },
             "hiddenSeries": false,
             "id": 12,
@@ -603,7 +699,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 24
+                "y": 31
             },
             "hiddenSeries": false,
             "id": 14,
@@ -697,7 +793,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 32
+                "y": 39
             },
             "hiddenSeries": false,
             "id": 16,
@@ -791,7 +887,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 32
+                "y": 39
             },
             "hiddenSeries": false,
             "id": 18,
@@ -866,102 +962,6 @@
                 "align": false,
                 "alignLevel": null
             }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": null,
-            "fieldConfig": {
-                "defaults": {
-                    "custom": {}
-                },
-                "overrides": []
-            },
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 9,
-                "w": 12,
-                "x": 0,
-                "y": 40
-            },
-            "hiddenSeries": false,
-            "id": 2,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "dataLinks": []
-            },
-            "percentage": false,
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "repeat": null,
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "expr": "(sum by (service, method) (increase(mosn_request_total{service=\"$service\", instance=\"$instance\"}[1m])))",
-                    "instant": false,
-                    "interval": "1m",
-                    "legendFormat": "{{service}}-{{method}}",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "请求数量",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "none",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
         }
     ],
     "refresh": "5s",
@@ -991,10 +991,9 @@
             {
                 "allValue": null,
                 "current": {
-                    "isNone": true,
                     "selected": false,
-                    "text": "None",
-                    "value": ""
+                    "text": "com.dmall.AsyncTest.api.UserInfoService",
+                    "value": "com.dmall.AsyncTest.api.UserInfoService"
                 },
                 "datasource": "$datasource",
                 "definition": "label_values(mosn_request_total{}, service)",
@@ -1018,20 +1017,19 @@
             {
                 "allValue": null,
                 "current": {
-                    "isNone": true,
-                    "selected": false,
-                    "text": "None",
-                    "value": ""
+                    "selected": true,
+                    "text": "10.13.114.13:15090",
+                    "value": "10.13.114.13:15090"
                 },
                 "datasource": "$datasource",
-                "definition": "label_values(mosn_request_total{service=\"$service\", listener=\"egress_dubbo\"}, instance)",
+                "definition": "label_values(mosn_request_total{service=\"$service\", listener=\"outbound_listener\"}, instance)",
                 "hide": 0,
                 "includeAll": false,
                 "label": "实例",
                 "multi": false,
                 "name": "instance",
                 "options": [],
-                "query": "label_values(mosn_request_total{service=\"$service\", listener=\"egress_dubbo\"}, instance)",
+                "query": "label_values(mosn_request_total{service=\"$service\", listener=\"outbound_listener\"}, instance)",
                 "refresh": 1,
                 "regex": "",
                 "skipUrlSync": false,
@@ -1050,7 +1048,6 @@
     },
     "timepicker": {
         "refresh_intervals": [
-            "5s",
             "10s",
             "30s",
             "1m",
@@ -1065,6 +1062,5 @@
     "timezone": "",
     "title": "consumer",
     "uid": "YYs57WWMk",
-    "version": 2
+    "version": 4
 }
-

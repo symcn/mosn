@@ -33,9 +33,6 @@ func (c *ADSClient) reqEndpoints(streamClient envoy_service_discovery_v3.Aggrega
 		return errors.New("stream client is nil")
 	}
 	rs := getResponseNonceWithType(EnvoyEndpoint)
-	if len(rs.Resource) < 1 {
-		rs.Resource = clusterNames
-	}
 	err := streamClient.Send(&envoy_service_discovery_v3.DiscoveryRequest{
 		VersionInfo:   rs.Version,
 		ResourceNames: rs.Resource,
