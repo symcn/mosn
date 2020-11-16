@@ -46,7 +46,7 @@ func (d *dubboFilter) OnReceive(ctx context.Context, headers api.HeaderMap, buf 
 
 	listener := mosnctx.Get(ctx, types.ContextKeyListenerName).(string)
 
-	service, ok := headers.Get(dubbodm.ServiceNameHeader)
+	service, ok := headers.Get(dubbo.ServiceNameHeader)
 	if !ok {
 		log.DefaultLogger.Errorf("This filter {%s} just for dubbo protocol, please check your config.", v2.DubboStream)
 		return api.StreamFiltertermination
@@ -57,7 +57,7 @@ func (d *dubboFilter) OnReceive(ctx context.Context, headers api.HeaderMap, buf 
 	// because use http rule, so should add default path
 	headers.Set(protocol.MosnHeaderPathKey, "/")
 
-	method, _ := headers.Get(dubbodm.MethodNameHeader)
+	method, _ := headers.Get(dubbo.MethodNameHeader)
 	stats := getStats(listener, service, method)
 	if stats != nil {
 		stats.RequestServiceInfo.Inc(1)
