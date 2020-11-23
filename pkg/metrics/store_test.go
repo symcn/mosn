@@ -182,6 +182,25 @@ func TestExclusionKeys(t *testing.T) {
 	}
 }
 
+func TestLazyFlush(t *testing.T) {
+	LazyFlushMetrics = true
+	defer func() {
+		LazyFlushMetrics = false
+	}()
+
+	metrics, _ := NewMetrics("lazy", map[string]string{"lk": "lv"})
+	counter := metrics.Counter("counter")
+	counter.Count()
+
+	gauge := metrics.Gauge("gauge")
+	gauge.Value()
+
+	histogram := metrics.Histogram("histogram")
+	histogram.Count()
+
+	metrics.UnregisterAll()
+}
+
 func BenchmarkNewMetrics_SameLabels(b *testing.B) {
 	ResetAll()
 	total := b.N

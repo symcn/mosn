@@ -35,7 +35,7 @@ func (c *ADSClient) reqClusters(streamClient ads.AggregatedDiscoveryService_Stre
 	err := streamClient.Send(&envoy_api_v2.DiscoveryRequest{
 		VersionInfo:   "",
 		ResourceNames: []string{},
-		TypeUrl:       "type.googleapis.com/envoy.api.v2.Cluster",
+		TypeUrl:       EnvoyCluster,
 		ResponseNonce: "",
 		ErrorDetail:   nil,
 		Node: &envoy_api_v2_core1.Node{

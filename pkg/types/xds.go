@@ -65,6 +65,10 @@ var (
 		InterceptionMode: InterceptionRedirect,
 		ClusterID:        ClusterID,
 	}
+
+	// XdsVersion xds version
+	XdsVersionV3 = "V3"
+	XdsVersion   = XdsVersionV3
 )
 
 var globalXdsInfo = &XdsInfo{}
