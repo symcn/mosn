@@ -84,6 +84,7 @@ const (
 	VersionNameHeader          string = "version"
 	GroupNameHeader            string = "group"
 	InterfaceNameHeader        string = "interface"
+	PathNameHeadere            string = "path"
 )
 
 const (

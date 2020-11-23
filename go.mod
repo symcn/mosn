@@ -22,7 +22,6 @@ require (
 	github.com/json-iterator/go v1.1.9
 	github.com/juju/errors v0.0.0-20190930114154-d42613fe1ab9
 	github.com/juju/loggo v0.0.0-20190526231331-6e530bcce5d8 // indirect
-	github.com/juju/testing v0.0.0-20191001232224-ce9dec17d28b // indirect
 	github.com/lyft/protoc-gen-validate v0.0.14
 	github.com/miekg/dns v1.0.14
 	github.com/mosn/binding v0.0.0-20200413092018-2b47bdb20a9f
@@ -33,6 +32,7 @@ require (
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/stretchr/testify v1.6.0
+	github.com/symcn/registry v0.0.0-20201116071449-7db670481a97
 	github.com/trainyao/go-maglev v0.0.0-20200611125015-4c1ae64d96a8
 	github.com/urfave/cli v1.20.0
 	github.com/valyala/fasthttp v0.0.0-20200605121233-ac51d598dc54
@@ -46,6 +46,7 @@ require (
 	google.golang.org/grpc v1.28.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	istio.io/api v0.0.0-20200227213531-891bf31f3c32
+	k8s.io/apimachinery v0.17.0
 	k8s.io/klog v1.0.0
 	mosn.io/api v0.0.0-20201117130017-91d17c14b8af
 	mosn.io/pkg v0.0.0-20200729115159-2bd74f20be0f
