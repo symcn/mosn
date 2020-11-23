@@ -3,6 +3,7 @@
         {
             "default_log_path": "stdout",
             "default_log_level": "DEBUG",
+            "processor": "auto",
             "listeners": [
                 {
                     "name": "outbound_listener",
@@ -179,4 +180,3 @@
         }
     }
 }
-
