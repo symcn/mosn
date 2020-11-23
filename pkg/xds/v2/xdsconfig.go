@@ -37,7 +37,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	"mosn.io/mosn/pkg/featuregate"
 	"mosn.io/mosn/pkg/log"
-	"mosn.io/mosn/pkg/xds/conv"
+	"mosn.io/mosn/pkg/xds/v2/conv"
 )
 
 //  Init parsed ds and clusters config for xds
