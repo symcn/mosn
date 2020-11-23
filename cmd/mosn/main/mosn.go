@@ -51,6 +51,7 @@ import (
 	_ "mosn.io/mosn/pkg/protocol/xprotocol/bolt"
 	_ "mosn.io/mosn/pkg/protocol/xprotocol/boltv2"
 	_ "mosn.io/mosn/pkg/protocol/xprotocol/dubbo"
+	_ "mosn.io/mosn/pkg/protocol/xprotocol/dubbodm"
 	_ "mosn.io/mosn/pkg/protocol/xprotocol/tars"
 	_ "mosn.io/mosn/pkg/router"
 	_ "mosn.io/mosn/pkg/stream/http"
@@ -62,8 +63,9 @@ import (
 	_ "mosn.io/mosn/pkg/trace/sofa/xprotocol"
 	_ "mosn.io/mosn/pkg/trace/sofa/xprotocol/bolt"
 	_ "mosn.io/mosn/pkg/upstream/healthcheck"
-	_ "mosn.io/mosn/pkg/upstream/servicediscovery/dubbod"
+	_ "mosn.io/mosn/pkg/upstream/httpregistry/dubbo"
 	_ "mosn.io/mosn/pkg/xds"
+	// _ "mosn.io/mosn/pkg/upstream/servicediscovery/dubbod"
 )
 
 // Version mosn version

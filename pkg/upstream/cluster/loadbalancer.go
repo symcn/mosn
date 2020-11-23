@@ -46,7 +46,9 @@ func init() {
 	rrFactory = &roundRobinLoadBalancerFactory{
 		rand: rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
-	RegisterLBType(types.RoundRobin, rrFactory.newRoundRobinLoadBalancer)
+	// RegisterLBType(types.RoundRobin, rrFactory.newRoundRobinLoadBalancer)
+	// !import rr change wrr
+	RegisterLBType(types.RoundRobin, newWRRLoadBalancer)
 	RegisterLBType(types.Random, newRandomLoadBalancer)
 	RegisterLBType(types.WeightedRoundRobin, newWRRLoadBalancer)
 	RegisterLBType(types.LeastActiveRequest, newleastActiveRequestLoadBalancer)
