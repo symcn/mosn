@@ -26,7 +26,7 @@
                                         "upstream_protocol": "X",
                                         "router_config_name": "20882",
                                         "extend_config": {
-                                            "sub_protocol": "dubbo"
+                                            "sub_protocol": "dubbodm"
                                         }
                                     }
                                 }
@@ -46,7 +46,12 @@
                     "name": "inbound_listener",
                     "address": "0.0.0.0:20882",
                     "bind_port": true,
-                    "log_path": "stdout",
+                    "access_logs": [
+                        {
+                            "log_path": "stdout",
+                            "log_format": "[%start_time%] %request_received_duration% %response_received_duration% %bytes_sent% %bytes_received% %protocol% %response_code% %duration% %response_flag% %response_code% %upstream_local_address% %downstream_local_address% %downstream_remote_address% %upstream_host% %upstream_transport_failure_reason% %upstream_cluster%"
+                        }
+                    ],
                     "filter_chains": [
                         {
                             "tls_context": {},
@@ -192,4 +197,3 @@
         }
     }
 }
-

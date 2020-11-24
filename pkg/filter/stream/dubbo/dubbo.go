@@ -9,6 +9,7 @@ import (
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/protocol"
 	"mosn.io/mosn/pkg/protocol/xprotocol/dubbo"
+	"mosn.io/mosn/pkg/protocol/xprotocol/dubbodm"
 	"mosn.io/mosn/pkg/types"
 	"mosn.io/mosn/pkg/variable"
 	"mosn.io/pkg/buffer"
@@ -97,6 +98,8 @@ func (d *dubboFilter) Append(ctx context.Context, headers api.HeaderMap, buf buf
 	var isSuccess bool
 	switch frame := headers.(type) {
 	case *dubbo.Frame:
+		isSuccess = frame.GetStatusCode() == dubbo.RespStatusOK
+	case *dubbodm.Frame:
 		isSuccess = frame.GetStatusCode() == dubbo.RespStatusOK
 	default:
 		log.DefaultLogger.Errorf("this filter {%s} just for dubbo protocol, please check your config.", v2.DubboStream)
