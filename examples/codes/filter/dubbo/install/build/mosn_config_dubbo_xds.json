@@ -37,7 +37,7 @@
                         {
                             "type": "dubbo_stream",
                             "config": {
-                                "subset": "group"
+                                "subset": "sym-group"
                             }
                         }
                     ]
@@ -74,7 +74,7 @@
                         {
                             "type": "dubbo_stream",
                             "config": {
-                                "subset": "group"
+                                "subset": "sym-group"
                             }
                         }
                     ]
