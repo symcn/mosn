@@ -95,7 +95,7 @@ func (adsClient *ADSClient) receiveThread() {
 				continue
 			}
 			typeURL := resp.TypeUrl
-			HandleTypeURL(typeURL, adsClient, resp)
+			go HandleTypeURL(typeURL, adsClient, resp)
 		}
 	}
 }

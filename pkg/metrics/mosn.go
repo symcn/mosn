@@ -40,6 +40,10 @@ var (
 	LazyFlushMetrics bool
 )
 
+func init() {
+	LazyFlushMetrics = true
+}
+
 // NewMosnMetrics returns the basic metrics for mosn
 // export the function for extension
 // multiple calls will only make a metrics object
