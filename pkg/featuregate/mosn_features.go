@@ -21,6 +21,7 @@ const (
 	XdsMtlsEnable      Feature = "XdsMtlsEnable"
 	PayLoadLimitEnable Feature = "PayLoadLimitEnable"
 	MultiTenantMode    Feature = "MultiTenantMode"
+	HolmesEnable       Feature = "HolmesEnable"
 )
 
 func init() {
@@ -35,6 +36,12 @@ func init() {
 	AddFeatureSpec(MultiTenantMode, &BaseFeatureSpec{
 		DefaultValue:    false,
 		PreReleaseValue: Alpha,
+	})
+	AddFeatureSpec(HolmesEnable, &HolmesFeature{
+		BaseFeatureSpec: BaseFeatureSpec{
+			DefaultValue:    true,
+			PreReleaseValue: Alpha,
+		},
 	})
 
 }

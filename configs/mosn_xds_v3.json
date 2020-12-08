@@ -36,7 +36,7 @@
 									"endpoint": {
 										"address": {
 											"socket_address": {
-												"address": "127.0.0.1",
+												"address": "10.49.18.62",
 												"port_value": 15010
 											}
 										}

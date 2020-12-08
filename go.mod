@@ -25,13 +25,15 @@ require (
 	github.com/lyft/protoc-gen-validate v0.0.14
 	github.com/miekg/dns v1.0.14
 	github.com/mosn/binding v0.0.0-20200413092018-2b47bdb20a9f
+	github.com/mosn/holmes v0.0.0-20201208071226-635c28eb9363
 	github.com/mosn/registry v0.0.0-20200612075445-e18906b5ec91
 	github.com/neverhook/easygo v0.0.0-20180828090412-787757e64990
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.1.0
 	github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
-	github.com/stretchr/testify v1.6.0
+	github.com/shirou/gopsutil v3.20.11+incompatible // indirect
+	github.com/stretchr/testify v1.6.1
 	github.com/symcn/registry v0.0.0-20201116071449-7db670481a97
 	github.com/trainyao/go-maglev v0.0.0-20200611125015-4c1ae64d96a8
 	github.com/urfave/cli v1.20.0
@@ -40,7 +42,7 @@ require (
 	go.uber.org/automaxprocs v1.3.0
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
-	golang.org/x/sys v0.0.0-20200602100848-8d3cce7afc34
+	golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d
 	golang.org/x/tools v0.0.0-20191125144606-a911d9008d1f
 	google.golang.org/genproto v0.0.0-20200305110556-506484158171
 	google.golang.org/grpc v1.28.0

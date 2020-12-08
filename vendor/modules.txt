@@ -226,6 +226,8 @@ github.com/modern-go/reflect2
 github.com/mosn/binding
 github.com/mosn/binding/internal/bytesconv
 github.com/mosn/binding/internal/json
+# github.com/mosn/holmes v0.0.0-20201208071226-635c28eb9363
+github.com/mosn/holmes
 # github.com/mosn/registry v0.0.0-20200612075445-e18906b5ec91
 github.com/mosn/registry/dubbo
 github.com/mosn/registry/dubbo/common
@@ -261,13 +263,26 @@ github.com/prometheus/procfs/internal/fs
 github.com/rcrowley/go-metrics
 # github.com/satori/go.uuid v1.2.0
 github.com/satori/go.uuid
-# github.com/shirou/gopsutil v2.19.12+incompatible
+# github.com/shirou/gopsutil v3.20.11+incompatible
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/internal/common
 github.com/shirou/gopsutil/load
-# github.com/stretchr/testify v1.6.0
+github.com/shirou/gopsutil/mem
+github.com/shirou/gopsutil/net
+github.com/shirou/gopsutil/process
+# github.com/stretchr/testify v1.6.1
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
+# github.com/symcn/registry v0.0.0-20201116071449-7db670481a97
+github.com/symcn/registry/dubbo
+github.com/symcn/registry/dubbo/common
+github.com/symcn/registry/dubbo/common/constant
+github.com/symcn/registry/dubbo/common/logger
+github.com/symcn/registry/dubbo/config_center
+github.com/symcn/registry/dubbo/config_center/parser
+github.com/symcn/registry/dubbo/remoting
+github.com/symcn/registry/dubbo/remoting/zookeeper
+github.com/symcn/registry/dubbo/zookeeper
 # github.com/trainyao/go-maglev v0.0.0-20200611125015-4c1ae64d96a8
 github.com/trainyao/go-maglev
 # github.com/ugorji/go/codec v1.1.7
@@ -322,7 +337,7 @@ golang.org/x/net/internal/timeseries
 golang.org/x/net/ipv4
 golang.org/x/net/ipv6
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20200602100848-8d3cce7afc34
+# golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -431,6 +446,8 @@ istio.io/api/mixer/v1/config/client
 # istio.io/gogo-genproto v0.0.0-20190930162913-45029607206a
 istio.io/gogo-genproto/googleapis/google/api
 istio.io/gogo-genproto/googleapis/google/rpc
+# k8s.io/apimachinery v0.17.0
+k8s.io/apimachinery/pkg/util/rand
 # k8s.io/klog v1.0.0
 k8s.io/klog
 # mosn.io/api v0.0.0-20201117130017-91d17c14b8af
