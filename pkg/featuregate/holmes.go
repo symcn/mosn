@@ -41,7 +41,8 @@ func (hf *HolmesFeature) InitFunc() {
 		holmes.WithGoroutineDump(3000, 25, 200000),
 	)
 	if err != nil {
-		log.DefaultLogger.Fatalf("holmes init err: %+v", err)
+		log.DefaultLogger.Errorf("holmes init err: %+v", err)
+		return
 	}
 	h.EnableMemDump().EnableCPUDump().EnableGoroutineDump()
 	go h.Start()
