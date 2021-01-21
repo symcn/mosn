@@ -64,9 +64,7 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 	cacheKey := fmt.Sprintf("%s#%d", registryCacheKey, role)
 	reg, ok = registryClientCache[cacheKey]
 	if ok {
-		if reg != nil && reg.ConnectState() {
-			return reg, nil
-		}
+		return reg, nil
 	}
 
 	registrylock.Lock()
@@ -74,9 +72,7 @@ func getRegistry(role int) (dubboreg.Registry, error) {
 
 	reg, ok = registryClientCache[cacheKey]
 	if ok {
-		if reg != nil && reg.ConnectState() {
-			return reg, nil
-		}
+		return reg, nil
 	}
 
 	addrStr := GetZkAddr()

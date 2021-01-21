@@ -34,7 +34,7 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/shirou/gopsutil v3.20.11+incompatible // indirect
 	github.com/stretchr/testify v1.6.1
-	github.com/symcn/registry v0.0.0-20201116071449-7db670481a97
+	github.com/symcn/registry v0.0.0-20210121054932-56f1c02a6302
 	github.com/trainyao/go-maglev v0.0.0-20200611125015-4c1ae64d96a8
 	github.com/urfave/cli v1.20.0
 	github.com/valyala/fasthttp v0.0.0-20200605121233-ac51d598dc54
