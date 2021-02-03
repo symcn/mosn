@@ -12,7 +12,8 @@ import (
 )
 
 var (
-	eventQueue = make(chan event, 100)
+	// if request slow, should add this value
+	eventQueue = make(chan event, 500)
 )
 
 func init() {
@@ -130,7 +131,7 @@ func loopReceiveEvent() {
 				return
 			}
 			succ = false
-			log.DefaultLogger.Infof("%s %s service {%s}", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface)
+			log.DefaultLogger.Infof("start %s %s service {%s}", evt.Operat, evt.Role, evt.ServiceInfo.Service.Interface)
 
 			for {
 				_, err := getRegistryWithCheck(common.PROVIDER)
@@ -231,30 +232,50 @@ func afterEventHandler(evt event) {
 		list = snapSubList
 	default:
 		log.DefaultLogger.Errorf("[afterEventHandler] not define role:", evt.Role)
+		l.RUnlock()
+		return
 	}
 	l.RUnlock()
+
+	var requeue bool
 
 	switch evt.Operat {
 
 	case OpRegistry:
 		// registry failed, but new snap exist should re-registry
-		log.DefaultLogger.Infof("registry service:%s failed, should re-registry", evt.ServiceInfo.Service.Interface)
 		if _, exist := list[evt.ServiceInfo.Service.Interface]; exist {
 			log.DefaultLogger.Infof("registry service:%s failed, should re-registry", evt.ServiceInfo.Service.Interface)
-			eventQueue <- evt
-			return
+			requeue = true
 		}
 
 	case OpUnRegistry:
 		// unregistry failed, but new snap not exist, should re-unregistry
-		log.DefaultLogger.Infof("unregistry service:%s failed, should re-unregistry", evt.ServiceInfo.Service.Interface)
 		if _, exist := list[evt.ServiceInfo.Service.Interface]; !exist {
 			log.DefaultLogger.Infof("unregistry service:%s failed, should re-unregistry", evt.ServiceInfo.Service.Interface)
-			eventQueue <- evt
-			return
+			requeue = true
 		}
 
 	default:
 		log.DefaultLogger.Errorf("[afterEventHandler] not define operat:%s", evt.Operat)
 	}
+
+	if !requeue {
+		return
+	}
+
+	// !import use goroutine, otherwise will block queue
+	go func() {
+		t := time.NewTicker(time.Second * 5)
+		defer t.Stop()
+
+		for {
+			select {
+			case eventQueue <- evt:
+				return
+			case <-t.C:
+				log.DefaultLogger.Warnf("httpregistry requeue timeout:%+v", evt)
+			}
+		}
+	}()
+	return
 }

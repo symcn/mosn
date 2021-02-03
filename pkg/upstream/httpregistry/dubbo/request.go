@@ -67,11 +67,12 @@ func getRegistryInterfaceList() ServiceList {
 		}
 
 		// build can dispatchd interface list
-		sl.DispatchedInterfaceList = make([]string, 0, len(snapRegistryReadySubList))
+		sl.DispatchedInterfaceList = make([]string, 0, len(sl.SubInterfaceList))
 
 		for _, subSvc := range sl.SubInterfaceList {
+			subSvc = strings.ToLower(subSvc)
 			for k := range storeClusters {
-				if strings.Contains(strings.ToLower(k), strings.ToLower(subSvc)) {
+				if strings.HasSuffix(strings.ToLower(k), subSvc) {
 					sl.DispatchedInterfaceList = append(sl.DispatchedInterfaceList, subSvc)
 					break
 				}
