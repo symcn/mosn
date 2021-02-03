@@ -70,9 +70,9 @@ func getRegistryInterfaceList() ServiceList {
 		sl.DispatchedInterfaceList = make([]string, 0, len(sl.SubInterfaceList))
 
 		for _, subSvc := range sl.SubInterfaceList {
-			subSvc = strings.ToLower(subSvc)
+			subSvcTmp := strings.ToLower(subSvc)
 			for k := range storeClusters {
-				if strings.HasSuffix(strings.ToLower(k), subSvc) {
+				if strings.HasSuffix(strings.ToLower(k), subSvcTmp) {
 					sl.DispatchedInterfaceList = append(sl.DispatchedInterfaceList, subSvc)
 					break
 				}
